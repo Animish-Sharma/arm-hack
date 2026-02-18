@@ -224,9 +224,9 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
             child: Column(
               children: [
-                const Text(
-                  'Downloading Whisper model…',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                Text(
+                  provider.loadingStatus,
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
                 const SizedBox(height: 12),
                 LinearProgressIndicator(

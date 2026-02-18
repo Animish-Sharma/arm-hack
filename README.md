@@ -57,9 +57,10 @@ This application leverages **Google Gemma** (via MediaPipe/LiteRT) for translati
     ```
 
 2.  **Download Models**:
-    -   **Gemma Model**: Download `gemma3-1b-it-int4.task` and place it in your device's `Download/` folder.
-        -   *Note: The app expects the model at `/storage/emulated/0/Download/gemma3-1b-it-int4.task`.*
-    -   **Whisper Models**: The app will automatically download `ggml-tiny-en-q4_0.bin` and `ggml-tiny-hindi-q4_0.bin` on first run.
+    -   **Automatic Download**: The app will automatically download the necessary models on the first run:
+        -   **Gemma Model**: `gemma3-1b-it-int4.task` (~1GB)
+        -   **Whisper Models**: `ggml-tiny-en-q4_0.bin` and `ggml-tiny-hindi-q4_0.bin`
+    -   *Note: Please ensure you have a stable internet connection for the first launch.*
 
 3.  **Run the App**:
     ```bash
@@ -72,7 +73,7 @@ This application leverages **Google Gemma** (via MediaPipe/LiteRT) for translati
 -   `android/app/src/main/cpp/`: Native C++ code for Whisper integration (`whisper_jni.cpp`, `whisper.h`).
 -   `lib/services/`: Core logic services.
     -   `stt_service.dart`: Manages recording and Whisper JNI calls.
-    -   `translation_service.dart`: Handles Gemma LLM inference.
+    -   `translation_service.dart`: Handles Gemma LLM inference (automatic model download & INT4 inference).
     -   `tts_service.dart`: Manages Text-to-Speech.
 -   `lib/providers/`: State management logic (`TranslatorProvider`).
 -   `lib/ui/`: UI components and screens.
@@ -80,5 +81,5 @@ This application leverages **Google Gemma** (via MediaPipe/LiteRT) for translati
 ## Troubleshooting
 
 -   **"No permissions found"**: Ensure you grant Microphone and Storage permissions when prompted.
--   **App Hangs on Initial Load**: The first run downloads ~70MB of Whisper models. Check your internet connection.
--   **Translation Hangs**: Ensure the Gemma model file exists in the correct path.
+-   **App Hangs on Initial Load**: The first run downloads large model files (Gemma ~1GB, Whisper ~70MB). Check your internet connection and wait for the loading spinner to complete.
+-   **Translation Hangs**: If the download was interrupted, clear the app data to force a re-download.

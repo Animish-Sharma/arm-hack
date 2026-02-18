@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Translation modes supported by the app
@@ -13,17 +17,21 @@ class TranslationService {
   dynamic _gemmaModel;
   bool _isInitialized = false;
 
-  /// Path to the Gemma model file in the Downloads folder
-  static const String modelPath = '/storage/emulated/0/Download/gemma3-1b-it-int4.task';
+  // Download progress callback (0.0 – 1.0), null when not downloading
+  ValueNotifier<double?> downloadProgress = ValueNotifier(null);
+
+  /// URL to the Gemma model file (INT4 quantized)
+  static const String modelUrl = 'https://huggingface.co/ashirbadsahu/arm-hack/resolve/main/gemma3-1b-it-int4.task';
+  static const String modelFilename = 'gemma3-1b-it-int4.task';
 
   /// System instruction for translation-only output
   /// This ensures Gemma returns ONLY the translated text without explanations
-static const String systemInstruction = 
-  'You are a strict translation tool. '
-  'Translate the input and output ONLY the translated text. '
-  'Do not include definitions, pronunciations, greetings, or explanations. '
-  'Do not use bullet points'
-  'Output only the raw translation.';
+  static const String systemInstruction = 
+    'You are a strict translation tool. '
+    'Translate the input and output ONLY the translated text. '
+    'Do not include definitions, pronunciations, greetings, or explanations. '
+    'Do not use bullet points'
+    'Output only the raw translation.';
 
   /// Initialize the Gemma model from local storage
   /// 
@@ -36,12 +44,9 @@ static const String systemInstruction =
     if (_isInitialized) return true;
 
     try {
-      // Request storage permissions for accessing model file
-      final status = await Permission.manageExternalStorage.request();
-      if (!status.isGranted) {
-        print('Storage permission denied');
-        return false;
-      }
+      // Ensure model file is present (download if missing)
+      final modelFile = await _ensureModel();
+      final modelPath = modelFile.path;
 
       // Set the model path using the ModelFileManager (Legacy API)
       final modelManager = FlutterGemmaPlugin.instance.modelManager;
@@ -51,7 +56,7 @@ static const String systemInstruction =
       // The model uses INT4 quantization for efficient inference
       _gemmaModel = await FlutterGemmaPlugin.instance.createModel(
         modelType: ModelType.gemmaIt,
-        maxTokens: 1024,  // Increased to match model capacity/cache size
+        maxTokens: 512,  // Increased to match model capacity/cache size
         preferredBackend: PreferredBackend.gpu,
       );
 
@@ -63,6 +68,55 @@ static const String systemInstruction =
     } catch (e) {
       print('Error initializing Gemma: $e');
       return false;
+    }
+  }
+
+  Future<File> _ensureModel() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final modelFile = File('${appDir.path}/$modelFilename');
+
+    if (await modelFile.exists()) {
+      print('TranslationService: model already cached: ${modelFile.path}');
+      return modelFile;
+    }
+
+    print('TranslationService: downloading $modelFilename from $modelUrl ...');
+    downloadProgress.value = 0.0;
+
+    try {
+      final request = http.Request('GET', Uri.parse(modelUrl));
+      final response = await request.send();
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to download model: HTTP ${response.statusCode}');
+      }
+
+      final total = response.contentLength ?? 0;
+      int received = 0;
+      final sink = modelFile.openWrite();
+
+      await for (final chunk in response.stream) {
+        sink.add(chunk);
+        received += chunk.length;
+        if (total > 0) {
+          downloadProgress.value = received / total;
+        }
+      }
+
+      await sink.flush();
+      await sink.close();
+      
+      print('TranslationService: downloaded $modelFilename');
+      return modelFile;
+    } catch (e) {
+      downloadProgress.value = null;
+      // Clean up partial file
+      if (await modelFile.exists()) {
+        await modelFile.delete();
+      }
+      rethrow;
+    } finally {
+      downloadProgress.value = null;
     }
   }
 

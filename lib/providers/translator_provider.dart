@@ -13,29 +13,60 @@ class TranslatorProvider extends ChangeNotifier {
   TranslationState _state = TranslationState();
   TranslationState get state => _state;
 
-  // Download progress forwarded from STTService (null = not downloading)
-  double? get downloadProgress => _sttService.downloadProgress.value;
+  // Unified download progress (0.0 - 1.0)
+  double? get downloadProgress {
+    if (_sttService.downloadProgress.value != null) {
+      return _sttService.downloadProgress.value;
+    }
+    if (_translationService.downloadProgress.value != null) {
+      return _translationService.downloadProgress.value;
+    }
+    return null;
+  }
+
+  // Status message for the loading screen
+  String get loadingStatus {
+    if (_sttService.downloadProgress.value != null) {
+      return 'Downloading Whisper model...';
+    }
+    if (_translationService.downloadProgress.value != null) {
+      return 'Downloading Gemma model...';
+    }
+    return 'Loading models...';
+  }
 
   /// Initialize all services.
   Future<void> initialize() async {
     _updateState(_state.copyWith(state: AppState.initializing));
     try {
-      // Listen for model download progress and forward to UI
-      _sttService.downloadProgress.addListener(() {
-        notifyListeners();
-      });
+      // Listen for download progress from both services
+      void onProgress() => notifyListeners();
+      
+      _sttService.downloadProgress.addListener(onProgress);
+      _translationService.downloadProgress.addListener(onProgress);
 
       final sttOk = await _sttService.initialize();
       if (!sttOk) {
         _updateState(_state.copyWith(
           state: AppState.error,
-          errorMessage: 'Microphone permission denied or model download failed',
+          errorMessage: 'Microphone permission denied or Whisper model download failed',
         ));
         return;
       }
 
-      await _translationService.initialize();
+      final transOk = await _translationService.initialize();
+      if (!transOk) {
+         _updateState(_state.copyWith(
+          state: AppState.error,
+          errorMessage: 'Gemma model initialization/download failed',
+        ));
+        return;
+      }
+
       await _ttsService.initialize();
+      
+      _sttService.downloadProgress.removeListener(onProgress);
+      _translationService.downloadProgress.removeListener(onProgress);
       
       _updateState(_state.copyWith(state: AppState.idle));
     } catch (e) {
