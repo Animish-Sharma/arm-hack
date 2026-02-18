@@ -1,0 +1,109 @@
+### Sherpa-ONNX + Gemma-3 Speech Translator Prompt
+
+> Build a Flutter Android app for a **completely offline** Real-Time Speech-to-Speech Translator using Sherpa-ONNX and Gemma-3.
+
+---
+
+## Core Architecture
+
+### 1. ASR (Speech-to-Text) - Sherpa-ONNX
+* Use the `sherpa_onnx` plugin for offline speech recognition
+* Initialize **two separate** `OfflineRecognizer` instances (one for English, one for Hindi)
+* **Model Paths:**
+  * English: `/storage/emulated/0/Download/sherpa-onnx/whisper-english/`
+  * Hindi: `/storage/emulated/0/Download/sherpa-onnx/whisper-hindi/`
+* Implement streaming audio capture with real-time transcription
+* **CRITICAL:** Check if Hindi recognizer is available before using it. If unavailable, show a dialog guiding users to download the model files.
+
+### 2. Translation - Flutter Gemma (LLM)
+* Use `flutter_gemma` plugin for on-device translation
+* **Model Path:** `/storage/emulated/0/Download/gemma3-1b-it-int4.task`
+* **CRITICAL Initialization:**
+  * Call `FlutterGemma.initialize()` in `main()` BEFORE `runApp()`
+  * Use the **Legacy API** with session-based inference
+  * Pattern: `createSession()` → `addQueryChunk()` → `getResponse()` → `session.close()`
+  * ALWAYS close sessions in a `finally` block to prevent memory leaks
+
+* **Translation Prompt Engineering (CRITICAL):**
+  * Use clear, explicit prompts for complete sentence translation
+  * Example format:
+    ```
+    Translate the complete sentence from English to Hindi. 
+    Only output the Hindi translation, nothing else.
+    
+    English: "your text here"
+    
+    Hindi translation:
+    ```
+  * Set `temperature: 0.8` and `topK: 40` for natural translations
+  * DO NOT use terse prompts like "English: text\nHindi:" - they cause incomplete translations
+
+### 3. TTS (Text-to-Speech) - Sherpa-ONNX
+* Use `sherpa_onnx` plugin with **VITS** configuration
+* **Model Paths:**
+  * English: `/storage/emulated/0/Download/sherpa-onnx/tts-english/model.onnx`
+  * Hindi: `/storage/emulated/0/Download/sherpa-onnx/tts-hindi/model.onnx`
+* **espeak-ng Data:** `/storage/emulated/0/Download/sherpa-onnx/espeak-ng-data` (mandatory for phonemes)
+* Use voice names: Amy (English), Priyamvada (Hindi)
+
+---
+
+## Workflow Logic
+
+1. **Language Toggle:** Switch between "English → Hindi" and "Hindi → English"
+2. **Mic Button:**
+   * Press: Start Sherpa-ONNX `OfflineStream` for the source language
+   * Release: Finalize transcription
+   * **Add manual stop:** Allow tapping again to stop listening early
+3. **Translation:**
+   * Send transcribed text to Gemma with proper session handling
+   * Show "Translating..." animation during processing
+4. **Speech Output:**
+   * Pass Gemma's output to Sherpa-ONNX TTS with correct voice/language
+
+---
+
+## Critical Implementation Details
+
+### Permissions & Manifest
+* Request `Permission.manageExternalStorage` and `Permission.microphone` on startup
+* Add to `AndroidManifest.xml`:
+  ```xml
+  <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <application android:largeHeap="true" android:requestLegacyExternalStorage="true">
+  ```
+
+### Language Availability Checking
+* Check if Hindi models are available before use
+* If unavailable, show a dialog with:
+  * Clear explanation of what's missing
+  * Instructions on where to download models
+  * Option to continue with English-only mode
+
+### Error Handling
+* Handle model initialization failures gracefully
+* Show user-friendly error messages
+* Provide fallback options when models are unavailable
+
+---
+
+## UI Requirements
+
+* **Dark Mode Theme:** Modern, clean design
+* **Mic Button:** 
+  * Large, centered, animated
+  * Changes color based on state (idle/listening/translating/speaking)
+  * Shows stop icon when listening
+* **Status Text:** Clear indication of current state with "(tap to stop)" hint
+* **Translation Log:** Scrollable chat-style history showing original and translated text
+* **Language Toggle:** Visual toggle showing current direction (e.g., "English ⇄ हिन्दी")
+
+---
+
+## Performance Notes
+
+* Mention in code comments: "Using Sherpa-ONNX with ONNX Runtime for efficient CPU inference"
+* Emphasize offline-first architecture
+* All processing happens on-device with no network calls
+> 
