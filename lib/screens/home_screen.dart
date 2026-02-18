@@ -19,18 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize services when screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<TranslatorProvider>();
-      provider.initialize();
-      
-      // Listen for Hindi unavailable error
-      provider.addListener(() {
-        if (provider.state.errorMessage == 'HINDI_UNAVAILABLE') {
-          _showHindiUnavailableDialog();
-          provider.clearError();
-        }
-      });
+      context.read<TranslatorProvider>().initialize();
     });
   }
 
@@ -227,6 +217,35 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMicSection() {
     return Consumer<TranslatorProvider>(
       builder: (context, provider, child) {
+        // Show download progress bar while models are being fetched
+        final progress = provider.downloadProgress;
+        if (progress != null) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+            child: Column(
+              children: [
+                const Text(
+                  'Downloading Whisper model…',
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+                const SizedBox(height: 12),
+                LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: const Color(0xFF374151),
+                  color: const Color(0xFF6366F1),
+                  minHeight: 6,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${(progress * 100).toStringAsFixed(0)}%',
+                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                ),
+              ],
+            ),
+          );
+        }
+
         return Column(
           children: [
             // Status text
@@ -306,64 +325,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Show dialog when Hindi language pack is not available
-  void _showHindiUnavailableDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1F2937),
-        title: Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B)),
-            SizedBox(width: 12),
-            Text(
-              'Hindi Not Available',
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Hindi speech recognition is not available on your device.',
-              style: TextStyle(color: Colors.grey.shade300, fontSize: 16),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'To use Hindi → English translation, you need to:',
-              style: TextStyle(color: Colors.grey.shade300, fontSize: 14),
-            ),
-            SizedBox(height: 8),
-            Text(
-              '1. Tap "Open Settings" below\n'
-              '2. Find "Offline speech recognition"\n'
-              '3. Download "Hindi" language pack',
-              style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: Colors.grey.shade400),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<TranslatorProvider>().openLanguageSettings();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF6366F1),
-            ),
-            child: Text('Open Settings'),
-          ),
-        ],
-      ),
-    );
-  }
 }
