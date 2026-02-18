@@ -98,6 +98,8 @@ class _MicButtonState extends State<MicButton> with SingleTickerProviderStateMix
         return Icons.volume_up;
       case AppState.error:
         return Icons.error;
+      case AppState.initializing:
+        return Icons.hourglass_empty;
     }
   }
 
@@ -114,6 +116,8 @@ class _MicButtonState extends State<MicButton> with SingleTickerProviderStateMix
         return const Color(0xFF10B981);  // Green (speaking)
       case AppState.error:
         return const Color(0xFFDC2626);  // Dark red
+      case AppState.initializing:
+        return Colors.grey;
     }
   }
 

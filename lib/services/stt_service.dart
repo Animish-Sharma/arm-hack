@@ -169,6 +169,8 @@ class STTService {
     debugPrint('STTService: recording started → $_currentAudioPath');
   }
 
+  String? _currentLoadedModelPath;
+
   /// Stop recording and run Whisper transcription.
   /// The result is delivered via the [onResult] callback passed to [startListening].
   Future<void> stopListening() async {
@@ -183,11 +185,18 @@ class STTService {
     try {
       // Load the correct model (re-init only if model changed)
       final modelPath = await _modelPath(_activeModel!);
-      final ok = await WhisperChannel.initWhisper(modelPath);
-      if (!ok) {
-        debugPrint('STTService: whisper init failed');
-        _onResult!('');
-        return;
+      
+      if (_currentLoadedModelPath != modelPath) {
+         debugPrint('STTService: loading model $modelPath ...');
+         final ok = await WhisperChannel.initWhisper(modelPath);
+         if (!ok) {
+           debugPrint('STTService: whisper init failed');
+           _onResult!('');
+           return;
+         }
+         _currentLoadedModelPath = modelPath;
+      } else {
+        debugPrint('STTService: model already loaded: $modelPath');
       }
 
       final text = await WhisperChannel.transcribe(audioPath, _activeModel!.language);

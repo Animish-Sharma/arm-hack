@@ -217,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMicSection() {
     return Consumer<TranslatorProvider>(
       builder: (context, provider, child) {
-        // Show download progress bar while models are being fetched
+        // Show download progress
         final progress = provider.downloadProgress;
         if (progress != null) {
           return Padding(
@@ -240,6 +240,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   '${(progress * 100).toStringAsFixed(0)}%',
                   style: const TextStyle(color: Colors.white54, fontSize: 12),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Show initialization spinner
+        if (provider.state.state == AppState.initializing) {
+           return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+            child: Column(
+              children: [
+                const CircularProgressIndicator(color: Color(0xFF6366F1)),
+                const SizedBox(height: 16),
+                const Text(
+                  'Loading Gemma & Whisper models...',
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                 Text(
+                  'First run may take a few seconds',
+                  style: TextStyle(color: Colors.white30, fontSize: 12),
                 ),
               ],
             ),
@@ -311,6 +333,10 @@ class _HomeScreenState extends State<HomeScreen> {
       case AppState.error:
         text = 'Error occurred';
         color = const Color(0xFFEF4444);
+        break;
+      case AppState.initializing:
+        text = 'Initializing...';
+        color = Colors.grey.shade400;
         break;
     }
 

@@ -22,7 +22,7 @@ static const String systemInstruction =
   'You are a strict translation tool. '
   'Translate the input and output ONLY the translated text. '
   'Do not include definitions, pronunciations, greetings, or explanations. '
-  'Do not use bullet points or "Namaste". '
+  'Do not use bullet points'
   'Output only the raw translation.';
 
   /// Initialize the Gemma model from local storage
@@ -51,7 +51,7 @@ static const String systemInstruction =
       // The model uses INT4 quantization for efficient inference
       _gemmaModel = await FlutterGemmaPlugin.instance.createModel(
         modelType: ModelType.gemmaIt,
-        maxTokens: 512,  // Sufficient for translation tasks
+        maxTokens: 1024,  // Increased to match model capacity/cache size
         preferredBackend: PreferredBackend.gpu,
       );
 
@@ -81,12 +81,13 @@ static const String systemInstruction =
     try {
       // Build the translation prompt based on mode
       final String prompt = _buildPrompt(text, mode);
+      print('TranslationService: sending prompt to Gemma: "$prompt"');
 
       // Create a session for single inference
       session = await _gemmaModel!.createSession(
-        temperature: 0.8,  // Balanced temperature for natural translations
+        temperature: 0.0,  // Deterministic for translation
         randomSeed: 1,
-        topK: 40,  // Allow more word choices for better translations
+        topK: 1,  // Greedy decoding for speed and accuracy
       );
 
       // Add the translation query

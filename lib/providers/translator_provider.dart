@@ -18,6 +18,7 @@ class TranslatorProvider extends ChangeNotifier {
 
   /// Initialize all services.
   Future<void> initialize() async {
+    _updateState(_state.copyWith(state: AppState.initializing));
     try {
       // Listen for model download progress and forward to UI
       _sttService.downloadProgress.addListener(() {
@@ -35,6 +36,8 @@ class TranslatorProvider extends ChangeNotifier {
 
       await _translationService.initialize();
       await _ttsService.initialize();
+      
+      _updateState(_state.copyWith(state: AppState.idle));
     } catch (e) {
       _updateState(_state.copyWith(
         state: AppState.error,
@@ -69,6 +72,11 @@ class TranslatorProvider extends ChangeNotifier {
       await _sttService.startListening(
         localeId: sourceLocale,
         onResult: (recognizedText) async {
+          if (_benchmarkStartTime != null) {
+             final sttLatency = DateTime.now().difference(_benchmarkStartTime!);
+             print('[Benchmark] STT Latency: ${sttLatency.inMilliseconds}ms');
+          }
+           
           if (recognizedText.isEmpty) {
             _updateState(_state.copyWith(
               state: AppState.error,
@@ -87,9 +95,13 @@ class TranslatorProvider extends ChangeNotifier {
     }
   }
 
+  DateTime? _benchmarkStartTime;
+
   /// Stop recording and trigger transcription.
   Future<void> stopListening() async {
     if (_state.state != AppState.listening) return;
+    _benchmarkStartTime = DateTime.now();
+    print('[Benchmark] Stop received. Processing started at ${_benchmarkStartTime!.toIso8601String()}');
     // State will transition to translating once transcription completes
     await _sttService.stopListening();
   }
@@ -99,10 +111,13 @@ class TranslatorProvider extends ChangeNotifier {
     try {
       _updateState(_state.copyWith(state: AppState.translating));
 
+      final transStart = DateTime.now();
       final translatedText = await _translationService.translate(
         text: originalText,
         mode: _state.translationMode,
       );
+      final transEnd = DateTime.now();
+      print('[Benchmark] Translation Latency: ${transEnd.difference(transStart).inMilliseconds}ms');
 
       if (translatedText == null || translatedText.isEmpty) {
         _updateState(_state.copyWith(
@@ -127,7 +142,13 @@ class TranslatorProvider extends ChangeNotifier {
       final targetLanguage =
           _translationService.getTargetLanguageCode(_state.translationMode);
 
+      final ttsStart = DateTime.now();
       _ttsService.setCompletionHandler(() {
+        final ttsEnd = DateTime.now();
+        print('[Benchmark] TTS Latency: ${ttsEnd.difference(ttsStart).inMilliseconds}ms');
+        if (_benchmarkStartTime != null) {
+             print('[Benchmark] Total Pipeline Latency: ${ttsEnd.difference(_benchmarkStartTime!).inMilliseconds}ms');
+        }
         _updateState(_state.copyWith(state: AppState.idle));
       });
 
@@ -136,7 +157,7 @@ class TranslatorProvider extends ChangeNotifier {
         languageCode: targetLanguage,
       );
 
-      _updateState(_state.copyWith(state: AppState.idle));
+      // Note: Speak returns immediately, completion is handled by callback
     } catch (e) {
       _updateState(_state.copyWith(
         state: AppState.error,

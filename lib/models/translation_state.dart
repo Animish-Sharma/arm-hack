@@ -7,6 +7,7 @@ enum AppState {
   translating,    // Gemma is processing
   speaking,       // TTS is playing
   error,          // Error occurred
+  initializing,   // Loading models
 }
 
 /// Represents a single translation entry in the history
