@@ -56,7 +56,7 @@ class TranslationService {
       // The model uses INT4 quantization for efficient inference
       _gemmaModel = await FlutterGemmaPlugin.instance.createModel(
         modelType: ModelType.gemmaIt,
-        maxTokens: 512,  // Increased to match model capacity/cache size
+        maxTokens: 1024,  // Increased to match model capacity/cache size
         preferredBackend: PreferredBackend.gpu,
       );
 

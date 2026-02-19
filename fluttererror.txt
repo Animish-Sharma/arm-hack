@@ -1,0 +1,698 @@
+[ +187 ms] ERROR: Missing classes detected while running R8. Please add the missing classes or apply additional
+keep rules that are generated in
+C:\Users\ashish\Desktop\projects\arm-hack-test\build\app\outputs\mapping\release\missing_rules.txt.
+[   +6 ms] ERROR: R8: Missing class com.google.android.play.core.splitcompat.SplitCompatApplication (referenced
+from: void io.flutter.embedding.android.FlutterPlayStoreSplitApplication.<init>() and 2 other contexts)
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallException (referenced from: void 
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.lambda$installDeferredComponent
+$1(int, java.lang.String, java.lang.Exception))
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallManager (referenced from:        
+com.google.android.play.core.splitinstall.SplitInstallManager
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.splitInstallManager and 5 other
+contexts)
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallManagerFactory (referenced from: 
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.<init>(android.content.Context,
+io.flutter.embedding.engine.FlutterJNI))
+[   +3 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallRequest$Builder (referenced from:
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallRequest (referenced from: void   
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallSessionState (referenced from:   
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager$FeatureInstallStateUpdatedListe
+ner.onStateUpdate(com.google.android.play.core.splitinstall.SplitInstallSessionState) and 1 other context)      
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener (referenced 
+from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.<init>(android.content.Context,
+io.flutter.embedding.engine.FlutterJNI) and 2 other contexts)
+[   +1 ms] Missing class com.google.android.play.core.tasks.OnFailureListener (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +1 ms] Missing class com.google.android.play.core.tasks.OnSuccessListener (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +1 ms] Missing class com.google.android.play.core.tasks.Task (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String) and 1 other context)
+[   +2 ms] Missing class com.google.mediapipe.proto.CalculatorProfileProto$CalculatorProfile (referenced from:  
+java.util.List com.google.mediapipe.framework.GraphProfiler.getCalculatorProfiles())
+[   +1 ms] Missing class com.google.mediapipe.proto.GraphTemplateProto$CalculatorGraphTemplate (referenced from:
+void
+com.google.mediapipe.framework.Graph.loadBinaryGraphTemplate(com.google.mediapipe.proto.GraphTemplateProto$Calcu
+latorGraphTemplate))
+[   +1 ms] > Task :app:minifyReleaseWithR8 FAILED
+[ +772 ms] FAILURE: Build failed with an exception.
+[   +1 ms] * What went wrong:
+[        ] Android Lint: Disposing Uast application environment in lint classloaders [31.9.1_true, 31.9.1_false]
+[   +1 ms] [Incubating] Problems report is available at:
+file:///C:/Users/ashish/Desktop/projects/arm-hack-test/build/reports/problems/problems-report.html
+[   +2 ms] Execution failed for task ':app:minifyReleaseWithR8'.
+[   +1 ms] > A failure occurred while executing com.android.build.gradle.internal.tasks.R8Task$R8Runnable       
+[   +1 ms]    > Compilation failed to complete
+[   +1 ms] * Try:
+[   +2 ms] > Run with --debug option to get more log output.
+[        ] > Run with --scan to get full insights.
+[   +2 ms] > Get more help at https://help.gradle.org.
+[   +3 ms] * Exception is:
+[   +1 ms] org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':app:minifyReleaseWithR8'.   
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.lambda$executeIfValid$1(ExecuteActionsTaskExe
+cuter.java:130)
+[   +1 ms]      at org.gradle.internal.Try$Failure.ifSuccessfulOrElse(Try.java:293)
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.jav
+a:128)
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:116) 
+[   +2 ms]      at
+org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTas
+kExecuter.java:40)
+[   +2 ms]      at
+org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.ja
+va:46)
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecute
+r.java:51)
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java
+:57)
+[   +4 ms]      at
+org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+[   +2 ms]      at
+org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)  
+[   +5 ms]      at
+org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)  
+[   +2 ms]      at
+org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+[        ]      at
+org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOper
+ationRunner.java:209)
+[   +2 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOper
+ationRunner.java:204)
+[   +3 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)       
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)       
+[  +12 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)        
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)        
+[   +1 ms]      at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)       
+[   +1 ms]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionG
+raph.java:331)
+[   +1 ms]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionG
+raph.java:318)
+[   +2 ms]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(Def
+aultTaskExecutionGraph.java:314)
+[   +1 ms]      at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+[   +1 ms]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskE
+xecutionGraph.java:314)
+[   +1 ms]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskE
+xecutionGraph.java:303)
+[        ]      at
+org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+[        ]      at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+[        ]      at
+org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+[        ]      at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+[        ]      at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+[        ]      at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+[        ]      at java.base/java.lang.Thread.run(Unknown Source)
+[        ] Caused by: org.gradle.workers.internal.DefaultWorkerExecutor$WorkExecutionException: A failure       
+occurred while executing com.android.build.gradle.internal.tasks.R8Task$R8Runnable
+[        ]      at
+org.gradle.workers.internal.DefaultWorkerExecutor$WorkItemExecution.waitForCompletion(DefaultWorkerExecutor.java
+:287)
+[        ]      at
+org.gradle.internal.work.DefaultAsyncWorkTracker.lambda$waitForItemsAndGatherFailures$2(DefaultAsyncWorkTracker.
+java:130)
+[        ]      at org.gradle.internal.Factories$1.create(Factories.java:31)
+[        ]      at
+org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocks(DefaultWorkerLeaseService.java:335)
+[   +2 ms]      at
+org.gradle.internal.work.DefaultWorkerLeaseService.withoutLocks(DefaultWorkerLeaseService.java:318)
+[   +1 ms]      at
+org.gradle.internal.work.DefaultWorkerLeaseService.withoutLock(DefaultWorkerLeaseService.java:323)
+[        ]      at
+org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:126)
+[        ]      at
+org.gradle.internal.work.DefaultAsyncWorkTracker.waitForItemsAndGatherFailures(DefaultAsyncWorkTracker.java:92) 
+[        ]      at org.gradle.internal.work.DefaultAsyncWorkTracker.waitForAll(DefaultAsyncWorkTracker.java:78) 
+[        ]      at
+org.gradle.internal.work.DefaultAsyncWorkTracker.waitForCompletion(DefaultAsyncWorkTracker.java:66)
+[        ]      at org.gradle.api.internal.tasks.execution.TaskExecution$3.run(TaskExecution.java:252)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:29)       
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:26)       
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)       
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)       
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)        
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:47)
+[   +1 ms]      at org.gradle.api.internal.tasks.execution.TaskExecution.executeAction(TaskExecution.java:229)
+[   +4 ms]      at org.gradle.api.internal.tasks.execution.TaskExecution.executeActions(TaskExecution.java:212) 
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.TaskExecution.executeWithPreviousOutputFiles(TaskExecution.java:195)    
+[   +1 ms]      at org.gradle.api.internal.tasks.execution.TaskExecution.execute(TaskExecution.java:162)        
+[        ]      at org.gradle.internal.execution.steps.ExecuteStep.executeInternal(ExecuteStep.java:105)        
+[        ]      at org.gradle.internal.execution.steps.ExecuteStep.access$000(ExecuteStep.java:44)
+[        ]      at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:59)
+[   +1 ms]      at org.gradle.internal.execution.steps.ExecuteStep$1.call(ExecuteStep.java:56)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOper
+ationRunner.java:209)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOper
+ationRunner.java:204)
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)       
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)       
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)        
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+[   +1 ms]      at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:56)
+[   +1 ms]      at org.gradle.internal.execution.steps.ExecuteStep.execute(ExecuteStep.java:44)
+[   +1 ms]      at org.gradle.internal.execution.steps.CancelExecutionStep.execute(CancelExecutionStep.java:42) 
+[        ]      at org.gradle.internal.execution.steps.TimeoutStep.executeWithoutTimeout(TimeoutStep.java:75)   
+[        ]      at org.gradle.internal.execution.steps.TimeoutStep.execute(TimeoutStep.java:55)
+[        ]      at
+org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:50)      
+[        ]      at
+org.gradle.internal.execution.steps.PreCreateOutputParentsStep.execute(PreCreateOutputParentsStep.java:28)      
+[        ]      at
+org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:67)        
+[        ]      at
+org.gradle.internal.execution.steps.RemovePreviousOutputsStep.execute(RemovePreviousOutputsStep.java:37)        
+[        ]      at
+org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:61)  
+[        ]      at
+org.gradle.internal.execution.steps.BroadcastChangingOutputsStep.execute(BroadcastChangingOutputsStep.java:26)  
+[        ]      at
+org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.ja
+va:69)
+[        ]      at
+org.gradle.internal.execution.steps.CaptureOutputsAfterExecutionStep.execute(CaptureOutputsAfterExecutionStep.ja
+va:46)
+[        ]      at
+org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:40)
+[        ]      at
+org.gradle.internal.execution.steps.ResolveInputChangesStep.execute(ResolveInputChangesStep.java:29)
+[        ]      at org.gradle.internal.execution.steps.BuildCacheStep.executeWithoutCache(BuildCacheStep.java:189)
+[        ]      at org.gradle.internal.execution.steps.BuildCacheStep.lambda$execute$1(BuildCacheStep.java:75)  
+[        ]      at org.gradle.internal.Either$Right.fold(Either.java:175)
+[        ]      at org.gradle.internal.execution.caching.CachingState.fold(CachingState.java:62)
+[   +1 ms]      at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:73)
+[   +2 ms]      at org.gradle.internal.execution.steps.BuildCacheStep.execute(BuildCacheStep.java:48)
+[        ]      at
+org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:46)
+[        ]      at
+org.gradle.internal.execution.steps.StoreExecutionStateStep.execute(StoreExecutionStateStep.java:35)
+[        ]      at org.gradle.internal.execution.steps.SkipUpToDateStep.executeBecause(SkipUpToDateStep.java:75)
+[        ]      at org.gradle.internal.execution.steps.SkipUpToDateStep.lambda$execute$2(SkipUpToDateStep.java:53)
+[        ]      at java.base/java.util.Optional.orElseGet(Unknown Source)
+[        ]      at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:53)       
+[        ]      at org.gradle.internal.execution.steps.SkipUpToDateStep.execute(SkipUpToDateStep.java:35)       
+[        ]      at
+org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFini
+shedStep.java:37)
+[        ]      at
+org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsFinishedStep.execute(MarkSnapshottingInputsFini
+shedStep.java:27)
+[   +1 ms]      at
+org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCaching
+StateStep.java:49)
+[        ]      at
+org.gradle.internal.execution.steps.ResolveIncrementalCachingStateStep.executeDelegate(ResolveIncrementalCaching
+StateStep.java:27)
+[        ]      at
+org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java
+:71)
+[        ]      at
+org.gradle.internal.execution.steps.AbstractResolveCachingStateStep.execute(AbstractResolveCachingStateStep.java
+:39)
+[        ]      at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:65)   
+[        ]      at org.gradle.internal.execution.steps.ResolveChangesStep.execute(ResolveChangesStep.java:36)   
+[        ]      at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:107)
+[        ]      at org.gradle.internal.execution.steps.ValidateStep.execute(ValidateStep.java:56)
+[        ]      at
+org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeEx
+ecutionStep.java:64)
+[   +1 ms]      at
+org.gradle.internal.execution.steps.AbstractCaptureStateBeforeExecutionStep.execute(AbstractCaptureStateBeforeEx
+ecutionStep.java:43)
+[   +1 ms]      at
+org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.executeWithNonEmptySources(AbstractSkipEmptyWorkSt
+ep.java:125)
+[   +1 ms]      at
+org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:56)        
+[        ]      at
+org.gradle.internal.execution.steps.AbstractSkipEmptyWorkStep.execute(AbstractSkipEmptyWorkStep.java:36)        
+[        ]      at
+org.gradle.internal.execution.steps.legacy.MarkSnapshottingInputsStartedStep.execute(MarkSnapshottingInputsStart
+edStep.java:38)
+[        ]      at
+org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:3
+6)
+[        ]      at
+org.gradle.internal.execution.steps.LoadPreviousExecutionStateStep.execute(LoadPreviousExecutionStateStep.java:2
+3)
+[        ]      at
+org.gradle.internal.execution.steps.HandleStaleOutputsStep.execute(HandleStaleOutputsStep.java:75)
+[        ]      at
+org.gradle.internal.execution.steps.HandleStaleOutputsStep.execute(HandleStaleOutputsStep.java:41)
+[        ]      at
+org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.lambda$execute$0(AssignMutableWorkspaceStep.java:
+35)
+[        ]      at org.gradle.api.internal.tasks.execution.TaskExecution$4.withWorkspace(TaskExecution.java:289)
+[   +1 ms]      at
+org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:31)      
+[        ]      at
+org.gradle.internal.execution.steps.AssignMutableWorkspaceStep.execute(AssignMutableWorkspaceStep.java:22)      
+[        ]      at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:40)   
+[        ]      at org.gradle.internal.execution.steps.ChoosePipelineStep.execute(ChoosePipelineStep.java:23)   
+[        ]      at
+org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.lambda$execute$2(ExecuteWorkBuildOperati
+onFiringStep.java:67)
+[        ]      at java.base/java.util.Optional.orElseGet(Unknown Source)
+[        ]      at
+org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringS
+tep.java:67)
+[        ]      at
+org.gradle.internal.execution.steps.ExecuteWorkBuildOperationFiringStep.execute(ExecuteWorkBuildOperationFiringS
+tep.java:39)
+[   +1 ms]      at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:46)     
+[   +1 ms]      at org.gradle.internal.execution.steps.IdentityCacheStep.execute(IdentityCacheStep.java:34)     
+[   +1 ms]      at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:48)
+[   +1 ms]      at org.gradle.internal.execution.steps.IdentifyStep.execute(IdentifyStep.java:35)
+[        ]      at
+org.gradle.internal.execution.impl.DefaultExecutionEngine$1.execute(DefaultExecutionEngine.java:61)
+[        ]      at
+org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.executeIfValid(ExecuteActionsTaskExecuter.jav
+a:127)
+[        ]      at
+org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter.execute(ExecuteActionsTaskExecuter.java:116) 
+[        ]      at
+org.gradle.api.internal.tasks.execution.ProblemsTaskPathTrackingTaskExecuter.execute(ProblemsTaskPathTrackingTas
+kExecuter.java:40)
+[        ]      at
+org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.ja
+va:46)
+[        ]      at
+org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecute
+r.java:51)
+[        ]      at
+org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java
+:57)
+[        ]      at
+org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+[        ]      at
+org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)  
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)  
+[        ]      at
+org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+[   +1 ms]      at
+org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOper
+ationRunner.java:209)
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOper
+ationRunner.java:204)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)       
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)       
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)        
+[   +1 ms]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+[        ]      at
+org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)        
+[        ]      at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)       
+[        ]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionG
+raph.java:331)
+[        ]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionG
+raph.java:318)
+[        ]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(Def
+aultTaskExecutionGraph.java:314)
+[        ]      at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:85)
+[        ]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskE
+xecutionGraph.java:314)
+[   +1 ms]      at
+org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskE
+xecutionGraph.java:303)
+[        ]      at
+org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:459)
+[        ]      at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:376)
+[        ]      at
+org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+[        ]      at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:48)
+[        ]      at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+[        ]      at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+[        ]      at java.base/java.lang.Thread.run(Unknown Source)
+[        ] Caused by: com.android.tools.r8.CompilationFailedException: Compilation failed to complete
+[        ]      at Version.fakeStackEntry(Version_8.9.32.java:0)
+[        ]      at
+com.android.tools.r8.S.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:5)
+[   +1 ms]      at
+com.android.tools.r8.internal.Nu.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:82
+)
+[   +1 ms]      at
+com.android.tools.r8.internal.Nu.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:32
+)
+[        ]      at
+com.android.tools.r8.internal.Nu.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:31
+)
+[        ]      at
+com.android.tools.r8.R8.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:22)        
+[        ]      at
+com.android.tools.r8.R8.run(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:3)       
+[        ]      at com.android.builder.dexing.R8Tool.runR8(r8Tool.kt:324)
+[        ]      at com.android.build.gradle.internal.tasks.R8Task$Companion.shrink(R8Task.kt:832)
+[        ]      at com.android.build.gradle.internal.tasks.R8Task$R8Runnable.execute(R8Task.kt:912)
+[        ]      at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:63)
+[        ]      at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:66)
+[        ]      at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:62)
+[        ]      at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:100)
+[   +1 ms]      at
+org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:62)       
+[        ]      at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+[        ]      at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOper
+ationRunner.java:209)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOper
+ationRunner.java:204)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)       
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)       
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)        
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+[        ]      at
+org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+[        ]      at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+[   +2 ms]      at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:59)
+[   +1 ms]      at
+org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)
+[        ]      at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+[        ]      at
+org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecuti
+onQueue.java:194)
+[        ]      at
+org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecution
+Queue.java:127)
+[        ]      at
+org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue
+.java:169)
+[        ]      at org.gradle.internal.Factories$1.create(Factories.java:31)
+[        ]      at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:263)
+[        ]      at
+org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:127)        
+[        ]      at
+org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:132)        
+[        ]      at
+org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQu
+eue.java:164)
+[        ]      at
+org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.j
+ava:133)
+[        ]      at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)
+[        ]      at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+[        ]      ... 5 more
+[        ] Caused by: com.android.tools.r8.internal.g: Missing class
+com.google.android.play.core.splitcompat.SplitCompatApplication (referenced from: void
+io.flutter.embedding.android.FlutterPlayStoreSplitApplication.<init>() and 2 other contexts)
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallException (referenced from: void 
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.lambda$installDeferredComponent
+$1(int, java.lang.String, java.lang.Exception))
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallManager (referenced from:        
+com.google.android.play.core.splitinstall.SplitInstallManager
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.splitInstallManager and 5 other
+contexts)
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallManagerFactory (referenced from: 
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.<init>(android.content.Context,
+io.flutter.embedding.engine.FlutterJNI))
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallRequest$Builder (referenced from:
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallRequest (referenced from: void   
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallSessionState (referenced from:   
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager$FeatureInstallStateUpdatedListe
+ner.onStateUpdate(com.google.android.play.core.splitinstall.SplitInstallSessionState) and 1 other context)      
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener (referenced 
+from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.<init>(android.content.Context,
+io.flutter.embedding.engine.FlutterJNI) and 2 other contexts)
+[        ] Missing class com.google.android.play.core.tasks.OnFailureListener (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[        ] Missing class com.google.android.play.core.tasks.OnSuccessListener (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[        ] Missing class com.google.android.play.core.tasks.Task (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String) and 1 other context)
+[        ] Missing class com.google.mediapipe.proto.CalculatorProfileProto$CalculatorProfile (referenced from:  
+java.util.List com.google.mediapipe.framework.GraphProfiler.getCalculatorProfiles())
+[        ] Missing class com.google.mediapipe.proto.GraphTemplateProto$CalculatorGraphTemplate (referenced from:
+void
+com.google.mediapipe.framework.Graph.loadBinaryGraphTemplate(com.google.mediapipe.proto.GraphTemplateProto$Calcu
+latorGraphTemplate))
+[        ]      at
+com.android.tools.r8.internal.Me0.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:2
+1)
+[        ]      at
+com.android.tools.r8.internal.Me0.error(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515
+a9:1)
+[        ]      at
+com.android.tools.r8.shaking.M.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:1980
+)
+[        ]      at
+com.android.tools.r8.shaking.M.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:1627
+)
+[        ]      at
+com.android.tools.r8.R8.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:1510)      
+[        ]      at
+com.android.tools.r8.R8.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:206)       
+[        ]      at
+com.android.tools.r8.R8.c(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:8)
+[        ]      at
+com.android.tools.r8.R8.b(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:1)
+[        ]      at
+com.android.tools.r8.internal.Nu.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:28
+)
+[        ]      ... 39 more
+[        ]      Suppressed: java.lang.RuntimeException: com.android.tools.r8.internal.g: Missing class
+com.google.android.play.core.splitcompat.SplitCompatApplication (referenced from: void
+io.flutter.embedding.android.FlutterPlayStoreSplitApplication.<init>() and 2 other contexts)
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallException (referenced from: void 
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.lambda$installDeferredComponent
+$1(int, java.lang.String, java.lang.Exception))
+[   +2 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallManager (referenced from:        
+com.google.android.play.core.splitinstall.SplitInstallManager
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.splitInstallManager and 5 other
+contexts)
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallManagerFactory (referenced from: 
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.<init>(android.content.Context,
+io.flutter.embedding.engine.FlutterJNI))
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallRequest$Builder (referenced from:
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallRequest (referenced from: void   
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallSessionState (referenced from:   
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager$FeatureInstallStateUpdatedListe
+ner.onStateUpdate(com.google.android.play.core.splitinstall.SplitInstallSessionState) and 1 other context)      
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener (referenced 
+from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.<init>(android.content.Context,
+io.flutter.embedding.engine.FlutterJNI) and 2 other contexts)
+[        ] Missing class com.google.android.play.core.tasks.OnFailureListener (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[        ] Missing class com.google.android.play.core.tasks.OnSuccessListener (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +1 ms] Missing class com.google.android.play.core.tasks.Task (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String) and 1 other context)
+[   +1 ms] Missing class com.google.mediapipe.proto.CalculatorProfileProto$CalculatorProfile (referenced from:  
+java.util.List com.google.mediapipe.framework.GraphProfiler.getCalculatorProfiles())
+[        ] Missing class com.google.mediapipe.proto.GraphTemplateProto$CalculatorGraphTemplate (referenced from:
+void
+com.google.mediapipe.framework.Graph.loadBinaryGraphTemplate(com.google.mediapipe.proto.GraphTemplateProto$Calcu
+latorGraphTemplate))
+[   +1 ms]              at
+com.android.tools.r8.internal.Me0.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:2
+7)
+[        ]              at
+com.android.tools.r8.shaking.M.a(R8_8.9.32_b544fddaa3c5775749f5287a4ea253aa22d60a2ae31101691f9da7bdcc5515a9:1982
+)
+[        ]              ... 45 more
+[        ]      Caused by: [CIRCULAR REFERENCE: com.android.tools.r8.internal.g: Missing class
+com.google.android.play.core.splitcompat.SplitCompatApplication (referenced from: void
+io.flutter.embedding.android.FlutterPlayStoreSplitApplication.<init>() and 2 other contexts)
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallException (referenced from: void 
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.lambda$installDeferredComponent
+$1(int, java.lang.String, java.lang.Exception))
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallManager (referenced from:        
+com.google.android.play.core.splitinstall.SplitInstallManager
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.splitInstallManager and 5 other
+contexts)
+[        ] Missing class com.google.android.play.core.splitinstall.SplitInstallManagerFactory (referenced from: 
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.<init>(android.content.Context,
+io.flutter.embedding.engine.FlutterJNI))
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallRequest$Builder (referenced from:
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +2 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallRequest (referenced from: void   
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallSessionState (referenced from:   
+void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager$FeatureInstallStateUpdatedListe
+ner.onStateUpdate(com.google.android.play.core.splitinstall.SplitInstallSessionState) and 1 other context)      
+[   +1 ms] Missing class com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener (referenced 
+from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.<init>(android.content.Context,
+io.flutter.embedding.engine.FlutterJNI) and 2 other contexts)
+[        ] Missing class com.google.android.play.core.tasks.OnFailureListener (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[   +1 ms] Missing class com.google.android.play.core.tasks.OnSuccessListener (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String))
+[        ] Missing class com.google.android.play.core.tasks.Task (referenced from: void
+io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager.installDeferredComponent(int,  
+java.lang.String) and 1 other context)
+[        ] Missing class com.google.mediapipe.proto.CalculatorProfileProto$CalculatorProfile (referenced from:  
+java.util.List com.google.mediapipe.framework.GraphProfiler.getCalculatorProfiles())
+[        ] Missing class com.google.mediapipe.proto.GraphTemplateProto$CalculatorGraphTemplate (referenced from:
+void
+com.google.mediapipe.framework.Graph.loadBinaryGraphTemplate(com.google.mediapipe.proto.GraphTemplateProto$Calcu
+latorGraphTemplate))]
+[   +2 ms] BUILD FAILED in 40s
+[   +3 ms] Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+[        ] You can use '--warning-mode all' to show the individual deprecation warnings and determine if they   
+come from your own scripts or plugins.
+[        ] For more on this, please refer to
+https://docs.gradle.org/8.12/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle      
+documentation.
+[        ] 361 actionable tasks: 19 executed, 342 up-to-date
+[        ] Watched directory hierarchies: [C:\Users\ashish\Desktop\apps\flutter\packages\flutter_tools\gradle,  
+C:\Users\ashish\Desktop\projects\arm-hack-test\android]
+[ +137 ms] Running Gradle task 'assembleRelease'... (completed in 40.9s)
+[  +63 ms] Error: Gradle task assembleRelease failed with exit code 1
+           #0      throwToolExit (package:flutter_tools/src/base/common.dart:34:3)
+           #1      AndroidGradleBuilder.buildGradleApp (package:flutter_tools/src/android/gradle.dart:600:7)    
+           <asynchronous suspension>
+           #2      AndroidGradleBuilder.buildApk (package:flutter_tools/src/android/gradle.dart:239:5)
+           <asynchronous suspension>
+           #3      AndroidDevice.startApp (package:flutter_tools/src/android/android_device.dart:567:7)
+           <asynchronous suspension>
+           #4      FlutterDevice.runCold (package:flutter_tools/src/resident_runner.dart:494:33)
+           <asynchronous suspension>
+           #5      ColdRunner.run (package:flutter_tools/src/run_cold.dart:55:28)
+           <asynchronous suspension>
+           #6      RunCommand.runCommand (package:flutter_tools/src/commands/run.dart:866:27)
+           <asynchronous suspension>
+           #7      FlutterCommand.run.<anonymous closure>
+(package:flutter_tools/src/runner/flutter_command.dart:1581:27)
+           <asynchronous suspension>
+           #8      AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)      
+           <asynchronous suspension>
+           #9      CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+           <asynchronous suspension>
+           #10     FlutterCommandRunner.runCommand.<anonymous closure>
+           (package:flutter_tools/src/runner/flutter_command_runner.dart:503:9)
+           <asynchronous suspension>
+           #11     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)      
+           <asynchronous suspension>
+           #12     FlutterCommandRunner.runCommand
+(package:flutter_tools/src/runner/flutter_command_runner.dart:438:5)
+           <asynchronous suspension>
+           #13     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:98:11)        
+           <asynchronous suspension>
+           #14     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)      
+           <asynchronous suspension>
+           #15     main (package:flutter_tools/executable.dart:101:3)
+           <asynchronous suspension>
+
+[   +5 ms] "flutter run" took 42,660ms.
+[ +115 ms] 
+                    #0      throwToolExit (package:flutter_tools/src/base/common.dart:34:3)
+                    #1      RunCommand.runCommand (package:flutter_tools/src/commands/run.dart:872:9)
+                    <asynchronous suspension>
+                    #2      FlutterCommand.run.<anonymous closure>
+(package:flutter_tools/src/runner/flutter_command.dart:1581:27)
+                    <asynchronous suspension>
+                    #3      AppContext.run.<anonymous closure>
+(package:flutter_tools/src/base/context.dart:154:19)
+                    <asynchronous suspension>
+                    #4      CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+                    <asynchronous suspension>
+                    #5      FlutterCommandRunner.runCommand.<anonymous closure>
+                    (package:flutter_tools/src/runner/flutter_command_runner.dart:503:9)
+                    <asynchronous suspension>
+                    #6      AppContext.run.<anonymous closure>
+(package:flutter_tools/src/base/context.dart:154:19)
+                    <asynchronous suspension>
+                    #7      FlutterCommandRunner.runCommand
+(package:flutter_tools/src/runner/flutter_command_runner.dart:438:5)
+                    <asynchronous suspension>
+                    #8      run.<anonymous closure>.<anonymous closure>
+(package:flutter_tools/runner.dart:98:11)
+                    <asynchronous suspension>
+                    #9      AppContext.run.<anonymous closure>
+(package:flutter_tools/src/base/context.dart:154:19)
+                    <asynchronous suspension>
+                    #10     main (package:flutter_tools/executable.dart:101:3)
+                    <asynchronous suspension>

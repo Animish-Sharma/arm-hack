@@ -103,9 +103,12 @@ class TranslatorProvider extends ChangeNotifier {
       await _sttService.startListening(
         localeId: sourceLocale,
         onResult: (recognizedText) async {
+          print('[Debug] onResult callback called. _benchmarkStartTime=$_benchmarkStartTime');
           if (_benchmarkStartTime != null) {
              final sttLatency = DateTime.now().difference(_benchmarkStartTime!);
              print('[Benchmark] STT Latency: ${sttLatency.inMilliseconds}ms');
+          } else {
+             print('[Benchmark] STT Latency: Skipped (_benchmarkStartTime is null)');
           }
            
           if (recognizedText.isEmpty) {
@@ -130,10 +133,18 @@ class TranslatorProvider extends ChangeNotifier {
 
   /// Stop recording and trigger transcription.
   Future<void> stopListening() async {
-    if (_state.state != AppState.listening) return;
+    print('[Debug] stopListening called. Current state: ${_state.state}');
+    if (_state.state != AppState.listening) {
+      print('[Debug] stopListening: Not in listening state. Ignoring.');
+      return;
+    }
     _benchmarkStartTime = DateTime.now();
     print('[Benchmark] Stop received. Processing started at ${_benchmarkStartTime!.toIso8601String()}');
-    // State will transition to translating once transcription completes
+    
+    // Update UI immediately to processing state while STT runs
+    // We use 'translating' as a general "processing" state for the UI
+    _updateState(_state.copyWith(state: AppState.translating));
+
     await _sttService.stopListening();
   }
 
