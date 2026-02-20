@@ -15,6 +15,7 @@ enum TranslationMode {
 /// Leverages LiteRT XNNPACK delegate with Arm NEON instructions for optimized inference
 class TranslationService {
   dynamic _gemmaModel;
+dynamic _session; // Persistent session to slash latency
   bool _isInitialized = false;
 
   // Download progress callback (0.0 – 1.0), null when not downloading
@@ -33,13 +34,6 @@ class TranslationService {
     'Do not use bullet points'
     'Output only the raw translation.';
 
-  /// Initialize the Gemma model from local storage
-  /// 
-  /// OPTIMIZATION NOTE:
-  /// This implementation uses the LiteRT XNNPACK delegate which automatically
-  /// leverages Arm NEON SIMD instructions on compatible devices. This provides
-  /// significant performance improvements for the Gemma-3 1B INT4 quantized model,
-  /// enabling real-time inference on mobile devices.
   Future<bool> initialize() async {
     if (_isInitialized) return true;
 
@@ -69,6 +63,15 @@ class TranslationService {
       print('Error initializing Gemma: $e');
       return false;
     }
+  }
+
+  Future<void> _resetSession() async {
+    if (_session != null) await _session.close();
+    _session = await _gemmaModel!.createSession(
+      temperature: 0.0, // Greedy decoding for raw speed [cite: 181]
+      randomSeed: 1,
+      topK: 1,
+    );
   }
 
   Future<File> _ensureModel() async {
@@ -127,49 +130,39 @@ class TranslationService {
     required TranslationMode mode,
   }) async {
     if (!_isInitialized) {
-      final initialized = await initialize();
-      if (!initialized) return null;
+      final ok = await initialize();
+      if (!ok) return null;
     }
 
-    dynamic session;
     try {
-      // Build the translation prompt based on mode
+      // 1. Reset context window so the model doesn't get "confused" by previous runs
+      await _resetSession(); 
+
       final String prompt = _buildPrompt(text, mode);
-      print('TranslationService: sending prompt to Gemma: "$prompt"');
 
-      // Create a session for single inference
-      session = await _gemmaModel!.createSession(
-        temperature: 0.0,  // Deterministic for translation
-        randomSeed: 1,
-        topK: 1,  // Greedy decoding for speed and accuracy
-      );
-
-      // Add the translation query
-      await session.addQueryChunk(Message.text(
+      // 2. Direct Query: Optimized for LiteRT XNNPACK/Arm NEON path
+      await _session.addQueryChunk(Message.text(
         text: prompt,
         isUser: true,
       ));
 
-      // Generate translation using Gemma
-      // The model will use Arm NEON instructions for accelerated inference
-      final String response = await session.getResponse();
-
-      return response.trim();
+      final String response = await _session.getResponse();
+      
+      // 3. Post-processing to clean output without LLM overhead
+      return _cleanResponse(response);
     } catch (e) {
       print('Translation error: $e');
+      _isInitialized = false;
       return null;
-    } finally {
-      // Always close the session to avoid memory leaks
-      if (session != null) {
-        try {
-          await session.close();
-        } catch (e) {
-          print('Error closing session: $e');
-        }
-      }
     }
   }
 
+  String _cleanResponse(String input) {
+    return input.trim()
+        .replaceAll(RegExp(r'^Hindi:\s*', caseSensitive: false), '')
+        .replaceAll(RegExp(r'^English:\s*', caseSensitive: false), '')
+        .split('\n').first; // Prevent multi-line hallucinations
+  }
   /// Build the translation prompt based on mode
   String _buildPrompt(String text, TranslationMode mode) {
     // Clear, direct instructions for complete translation

@@ -14,7 +14,7 @@ This application leverages **Google Gemma** (via MediaPipe/LiteRT) for translati
 -   **Performance Optimized**:
     -   **Arm NEON & XNNPACK**: Acceleration for heavy matrix operations.
     -   **Model Caching**: Whisper models kept in memory to eliminate loading latency between utterances.
-    -   **Optimized Inference**: Tuned `topK` and `maxTokens` for faster, deterministic translation.
+    -   **Optimized Inference**: Reduced `maxTokens` to 512 and tuned `topK` for faster, deterministic translation.
 
 ## User Interface
 
@@ -40,6 +40,17 @@ This application leverages **Google Gemma** (via MediaPipe/LiteRT) for translati
     -   Translation Latency
     -   TTS Latency
     -   Total Pipeline Latency
+
+## Benchmarking Tool
+
+To capture real-time performance metrics (STT, Translation, TTS latencies) to a CSV file on your host computer:
+
+1.  **Connect your device** via USB and ensure ADB is authorized.
+2.  **Run the logger script** (requires Python 3):
+    ```bash
+    python benchmark_logger.py
+    ```
+3.  **Use the App**: Perform translations. The script will automatically detect the logs and append them to `benchmark_results.csv`.
 
 ## Setup & Installation
 

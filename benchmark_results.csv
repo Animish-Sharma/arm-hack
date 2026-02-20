@@ -1,0 +1,18 @@
+timestamp,input_text,input_language,translated_text,output_language,stt_latency_ms,translation_latency_ms,tts_latency_ms,total_latency_ms
+2026-02-19T23:48:59.617879,Hi this is our test,en,नमस्ते का यह हमारा का,hi,6216,4507,5886,16609
+2026-02-19T23:49:31.419718,मैं अभी लैपटॉप चला रहा हूं,hi,I am currently using an laptop.,en,5550,4546,3760,13856
+2026-02-19T23:54:09.425360,I hope this work this time,en,मुझे उम्मीद है कि यह बार सफल हो.,hi,5191,4601,3196,12988
+2026-02-19T23:54:22.475692,बढ़िया काम किया।,hi,Good work!,en,5244,3076,1238,9558
+2026-02-20T00:00:26.601018,Please sit on the chair,en,कृपया 7-8 kursi पर बैठो।,hi,3705,4570,4960,13235
+2026-02-20T00:00:46.031424,कृपा करके खाना खा लीजिए,hi,Please eat your food!,en,4670,3565,2384,10619
+2026-02-20T00:01:33.866963,मुझे कॉफी पीने का मन कर रहा है,hi,I want coffee.,en,3601,3482,1285,8368
+2026-02-20T00:01:58.106564,Do you have coffee?,en,क्या आप ज़र.,hi,3722,3845,1070,8637
+2026-02-20T00:10:42.964122,Okay I hope it works this time for the translation,en,"""Okay I hope this translation will be successful.""",hi,3851,4592,5305,13748
+2026-02-20T00:11:17.105994,can I cut some moves of,en,"""क्या मैं कुछ वेश करूंगा?""",hi,3406,4251,1938,9595
+2026-02-20T00:11:41.755584,I want to eat a ketap.,en,"""I want eat ketap.""",hi,3786,4202,1498,9486
+2026-02-20T01:25:16.051291,was going to the United States today.,en,"""आज संयुक्त राज्य अमेरिका की यात्रा पर।""",hi,6651,5098,3735,15484
+2026-02-20T01:25:41.218338,What is your name?,en,आपका नाम क्या है?,hi,4291,3777,1549,9617
+2026-02-20T01:25:59.069192,मेरा नाम रमेश है,en,My name is Ramesh.,hi,4608,3577,2773,10958
+2026-02-20T01:26:15.397962,Where is Charminar?,en,Where is Charminar?,hi,4818,4011,1602,10431
+2026-02-20T01:27:04.493132,Can we hang out today?,en,क्या आज हम साथ हो सकते हैं?,hi,4337,4498,2318,11153
+2026-02-20T01:27:20.214923,Where is India Gate?,en,Where India Gate?,hi,4167,3525,1455,9147

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:speech_translator/models/translation_state.dart';
 import 'package:speech_translator/services/stt_service.dart';
@@ -104,9 +105,10 @@ class TranslatorProvider extends ChangeNotifier {
         localeId: sourceLocale,
         onResult: (recognizedText) async {
           print('[Debug] onResult callback called. _benchmarkStartTime=$_benchmarkStartTime');
+          int sttLatencyMs = 0;
           if (_benchmarkStartTime != null) {
-             final sttLatency = DateTime.now().difference(_benchmarkStartTime!);
-             print('[Benchmark] STT Latency: ${sttLatency.inMilliseconds}ms');
+             sttLatencyMs = DateTime.now().difference(_benchmarkStartTime!).inMilliseconds;
+             print('[Benchmark] STT Latency: ${sttLatencyMs}ms');
           } else {
              print('[Benchmark] STT Latency: Skipped (_benchmarkStartTime is null)');
           }
@@ -118,7 +120,7 @@ class TranslatorProvider extends ChangeNotifier {
             ));
             return;
           }
-          await _translateAndSpeak(recognizedText);
+          await _translateAndSpeak(recognizedText, sttLatencyMs);
         },
       );
     } catch (e) {
@@ -149,7 +151,7 @@ class TranslatorProvider extends ChangeNotifier {
   }
 
   /// Translate text and speak the result.
-  Future<void> _translateAndSpeak(String originalText) async {
+  Future<void> _translateAndSpeak(String originalText, int sttLatencyMs) async {
     try {
       _updateState(_state.copyWith(state: AppState.translating));
 
@@ -159,7 +161,8 @@ class TranslatorProvider extends ChangeNotifier {
         mode: _state.translationMode,
       );
       final transEnd = DateTime.now();
-      print('[Benchmark] Translation Latency: ${transEnd.difference(transStart).inMilliseconds}ms');
+      final translationLatencyMs = transEnd.difference(transStart).inMilliseconds;
+      print('[Benchmark] Translation Latency: ${translationLatencyMs}ms');
 
       if (translatedText == null || translatedText.isEmpty) {
         _updateState(_state.copyWith(
@@ -185,12 +188,50 @@ class TranslatorProvider extends ChangeNotifier {
           _translationService.getTargetLanguageCode(_state.translationMode);
 
       final ttsStart = DateTime.now();
+      
+      // We'll consider TTS "processing" time as the time until the speak command is issued
+      // plus the time it takes to synthesize.
+      // Since flutter_tts is async, we'll measure the time until the completion handler fires
+      // if possible, but the original code had completion handler setup.
+      // Actually, wait, the original code had:
+      // _ttsService.setCompletionHandler(() { ... });
+      // await _ttsService.speak(...);
+      // The completion handler is called when speaking FINISHES.
+      // This includes the duration of the speech itself.
+      // "TTS Latency" usually refers to time to *start* speaking (Time to First Audio).
+      // But for a full pipeline benchmark, total time is also interesting.
+      // Let's stick to the previous pattern: measure until completion for now as per original code.
+      
+      // I will refactor to use a Completer for the TTS to ensure we can await it if needed,
+      // but sticking to the existing pattern is less risky.
+      // I need to inject the logging into the completion handler or after.
+      // The original code printed latency in the completion handler.
+      // I will move the logging logic there.
+
       _ttsService.setCompletionHandler(() {
         final ttsEnd = DateTime.now();
-        print('[Benchmark] TTS Latency: ${ttsEnd.difference(ttsStart).inMilliseconds}ms');
+        final ttsLatencyMs = ttsEnd.difference(ttsStart).inMilliseconds;
+        print('[Benchmark] TTS Latency: ${ttsLatencyMs}ms');
+        
+        final totalLatencyMs = sttLatencyMs + translationLatencyMs + ttsLatencyMs;
         if (_benchmarkStartTime != null) {
-             print('[Benchmark] Total Pipeline Latency: ${ttsEnd.difference(_benchmarkStartTime!).inMilliseconds}ms');
+             print('[Benchmark] Total Pipeline Latency: ${totalLatencyMs}ms');
         }
+
+        // Log structured benchmark data
+        final benchmarkData = {
+          'timestamp': DateTime.now().toIso8601String(),
+          'input_text': originalText,
+          'input_language': _state.translationMode == TranslationMode.englishToHindi ? 'en' : 'hi',
+          'translated_text': translatedText,
+          'output_language': _state.translationMode == TranslationMode.englishToHindi ? 'hi' : 'en',
+          'stt_latency_ms': sttLatencyMs,
+          'translation_latency_ms': translationLatencyMs,
+          'tts_latency_ms': ttsLatencyMs,
+          'total_latency_ms': totalLatencyMs,
+        };
+        print('BENCHMARK_DATA: ${jsonEncode(benchmarkData)}');
+
         _updateState(_state.copyWith(state: AppState.idle));
       });
 
@@ -199,7 +240,7 @@ class TranslatorProvider extends ChangeNotifier {
         languageCode: targetLanguage,
       );
 
-      // Note: Speak returns immediately, completion is handled by callback
+
     } catch (e) {
       _updateState(_state.copyWith(
         state: AppState.error,
@@ -227,3 +268,4 @@ class TranslatorProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+
