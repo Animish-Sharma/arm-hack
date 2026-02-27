@@ -1,7 +1,7 @@
 # Voice Translator - Arm Hack Project
 
-- Project for the BharatSoc Hackathon by [Animish Sharma](https://github.com/Animish-Sharma) (CSTAR), [Ashirbard Sahu](https://github.com/ashirbadsahu) (CSG) and [Divyansh Atri](https://github.com/Divyansh-Atri) (CCNSB) under the guidance of [Prof. Priyesh Shukla](https://www.iiit.ac.in/faculty/priyesh-shukla/) (CVEST)
-
+- Project for the BharatSoc Hackathon by [Animish Sharma](https://github.com/Animish-Sharma) (CSTAR), [Ashirbard Sahu](https://github.com/ashirbadsahu) (CVEST) and [Divyansh Atri](https://github.com/Divyansh-Atri) (CCNSB) under the guidance of [Prof. Priyesh Shukla](https://www.iiit.ac.in/faculty/priyesh-shukla/) (CVEST)
+ <hr/>
 A high-performance, privacy-focused **Speech-to-Speech Translator** for Android, powered by on-device AI, leveraging Arm Neon.
 
 App is only for android devices with armv8 architecture.
