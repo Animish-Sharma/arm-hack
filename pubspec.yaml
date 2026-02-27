@@ -1,0 +1,50 @@
+name: speech_translator
+description: "Speech to Speech translation app demo for ARM Bharat AI-SoC Student Challenge"
+publish_to: 'none'
+
+
+version: 0.0.1+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  flutter_launcher_icons: ^0.14.4
+
+  cupertino_icons: ^1.0.8
+  
+  record: ^6.2.0
+  
+  http: ^1.2.2
+  
+  path_provider: ^2.1.4
+  
+  flutter_gemma: ^0.12.4
+  
+  flutter_tts: ^4.2.0
+  
+  permission_handler: ^11.3.1
+  
+  provider: ^6.1.2
+
+  intl: ^0.19.0
+  
+  # Whisper STT via JNI bridge (libwhisper.so in jniLibs)
+
+dev_dependencies:
+
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/images/app_icon.png"
