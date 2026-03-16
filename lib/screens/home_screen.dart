@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_translator/models/translation_state.dart';
@@ -5,6 +6,8 @@ import 'package:speech_translator/providers/translator_provider.dart';
 import 'package:speech_translator/services/translation_service.dart';
 import 'package:speech_translator/widgets/mic_button.dart';
 import 'package:speech_translator/widgets/translation_log.dart';
+import 'package:speech_translator/widgets/animated_background.dart';
+import 'package:speech_translator/widgets/audio_wave.dart';
 
 /// Main home screen for the speech-to-speech translator
 /// Features: dark mode, centered mic button, language toggle, translation log
@@ -27,50 +30,70 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF111827),  // Dark background
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header with title and language toggle
-            _buildHeader(),
-            
-            // Translation log (scrollable)
-            Expanded(
-              child: Consumer<TranslatorProvider>(
+      backgroundColor: Colors.transparent, // Let AnimatedBackground show through
+      body: AnimatedBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Header with title and language toggle
+              _buildHeader(),
+              
+              // Translation log (scrollable)
+              Expanded(
+                child: Consumer<TranslatorProvider>(
+                  builder: (context, provider, child) {
+                    return TranslationLog(history: provider.state.history);
+                  },
+                ),
+              ),
+              
+              // Audio Wave Visualizer
+              Consumer<TranslatorProvider>(
                 builder: (context, provider, child) {
-                  return TranslationLog(history: provider.state.history);
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    height: (provider.state.state == AppState.listening || provider.state.state == AppState.speaking) ? 60 : 0,
+                    curve: Curves.easeInOut,
+                    child: SingleChildScrollView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      child: AudioWave(
+                        isAnimating: provider.state.state == AppState.listening || provider.state.state == AppState.speaking,
+                        color: provider.state.state == AppState.listening ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                      ),
+                    ),
+                  );
                 },
               ),
-            ),
-            
-            // Microphone button and status
-            _buildMicSection(),
-            
-            const SizedBox(height: 40),
-          ],
+              
+              const SizedBox(height: 10),
+              
+              // Microphone button and status
+              _buildMicSection(),
+              
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// Build header with title and language toggle
+  /// Build header with title and language toggle and glassmorphism
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF1F2937), Color(0xFF111827)],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF111827).withOpacity(0.5),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.white.withOpacity(0.1),
+                width: 1,
+              ),
+            ),
           ),
-        ],
-      ),
       child: Column(
         children: [
           // Title
@@ -119,7 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _buildOptimizationBadge(),
         ],
       ),
-    );
+    ),
+  ),
+);
   }
 
   /// Build language toggle switch
@@ -340,13 +365,26 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
     }
 
-    return Text(
-      text,
-      style: TextStyle(
-        color: color,
-        fontSize: 18,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.5,
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.95, end: 1.0).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: Text(
+        text,
+        key: ValueKey<String>(text),
+        style: TextStyle(
+          color: color,
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }

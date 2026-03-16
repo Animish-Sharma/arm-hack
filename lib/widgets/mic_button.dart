@@ -17,70 +17,124 @@ class MicButton extends StatefulWidget {
   State<MicButton> createState() => _MicButtonState();
 }
 
-class _MicButtonState extends State<MicButton> with SingleTickerProviderStateMixin {
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
+class _MicButtonState extends State<MicButton> with TickerProviderStateMixin {
+  late AnimationController _rippleController;
 
   @override
   void initState() {
     super.initState();
     
-    // Create pulse animation for listening state
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat(reverse: true);
-
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.3).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    // Create ripple animation for listening/processing state
+    _rippleController = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 2000),
     );
+
+    if (_shouldAnimate(widget.state)) {
+      _rippleController.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(MicButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_shouldAnimate(widget.state) && !_shouldAnimate(oldWidget.state)) {
+      _rippleController.repeat();
+    } else if (!_shouldAnimate(widget.state) && _shouldAnimate(oldWidget.state)) {
+      _rippleController.stop();
+      _rippleController.value = 0.0;
+    }
+  }
+
+  bool _shouldAnimate(AppState state) {
+    return state == AppState.listening || 
+           state == AppState.translating ||
+           state == AppState.speaking;
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
+    _rippleController.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final bool isActive = widget.state == AppState.listening || 
-                          widget.state == AppState.translating ||
-                          widget.state == AppState.speaking;
-
-    return GestureDetector(
-      onTap: widget.state == AppState.idle || widget.state == AppState.listening 
-          ? widget.onPressed 
-          : null,
-      child: AnimatedBuilder(
-        animation: _pulseAnimation,
-        builder: (context, child) {
-          final scale = isActive ? _pulseAnimation.value : 1.0;
-          
-          return Transform.scale(
-            scale: scale,
+  Widget _buildRipple(double delay, Color color) {
+    return AnimatedBuilder(
+      animation: _rippleController,
+      builder: (context, child) {
+        // Calculate the current value with delay
+        double value = (_rippleController.value + delay) % 1.0;
+        
+        return Opacity(
+          opacity: (1.0 - value).clamp(0.0, 1.0),
+          child: Transform.scale(
+            scale: 1.0 + (value * 0.8), // Scale up to 1.8x
             child: Container(
               width: 120,
               height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: _getGradient(),
-                boxShadow: [
-                  BoxShadow(
-                    color: _getColor().withOpacity(0.5),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
+                border: Border.all(
+                  color: color.withOpacity(0.5),
+                  width: 3.0,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _getColor();
+    
+    return GestureDetector(
+      onTap: widget.state == AppState.idle || widget.state == AppState.listening 
+          ? widget.onPressed 
+          : null,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Background ripples
+          if (_shouldAnimate(widget.state)) ...[
+            _buildRipple(0.0, color),
+            _buildRipple(0.33, color),
+            _buildRipple(0.66, color),
+          ],
+          
+          // Main Button
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: _getGradient(color),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.5),
+                  blurRadius: _shouldAnimate(widget.state) ? 25 : 10,
+                  spreadRadius: _shouldAnimate(widget.state) ? 8 : 2,
+                ),
+              ],
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) => ScaleTransition(
+                scale: animation,
+                child: child,
               ),
               child: Icon(
                 _getIcon(),
+                key: ValueKey(_getIcon()),
                 size: 50,
                 color: Colors.white,
               ),
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -122,14 +176,13 @@ class _MicButtonState extends State<MicButton> with SingleTickerProviderStateMix
   }
 
   /// Get gradient based on current state
-  LinearGradient _getGradient() {
-    final color = _getColor();
+  LinearGradient _getGradient(Color color) {
     return LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
       colors: [
         color,
-        color.withOpacity(0.7),
+        Color.lerp(color, Colors.black, 0.3)!,
       ],
     );
   }

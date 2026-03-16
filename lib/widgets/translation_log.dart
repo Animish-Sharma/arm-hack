@@ -1,10 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:speech_translator/models/translation_state.dart';
 import 'package:intl/intl.dart';
 
 /// Scrollable log displaying translation history
 /// Shows original and translated text pairs with timestamps
-class TranslationLog extends StatelessWidget {
+class TranslationLog extends StatefulWidget {
   final List<TranslationEntry> history;
 
   const TranslationLog({
@@ -13,8 +14,64 @@ class TranslationLog extends StatelessWidget {
   });
 
   @override
+  State<TranslationLog> createState() => _TranslationLogState();
+}
+
+class _TranslationLogState extends State<TranslationLog> {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  late List<TranslationEntry> _localHistory;
+
+  @override
+  void initState() {
+    super.initState();
+    _localHistory = List.from(widget.history);
+  }
+
+  @override
+  void didUpdateWidget(TranslationLog oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // Check for new items added
+    if (widget.history.length > oldWidget.history.length) {
+      // Find the new items (assuming they are appended to the end)
+      for (int i = oldWidget.history.length; i < widget.history.length; i++) {
+        _localHistory.add(widget.history[i]);
+        // Insert at the beginning of the list since we use reverse: true
+        _listKey.currentState?.insertItem(
+          0,
+          duration: const Duration(milliseconds: 500),
+        );
+      }
+    } else if (widget.history.length < oldWidget.history.length) {
+      // Handle clear case
+      final int removedCount = _localHistory.length;
+      for (int i = removedCount - 1; i >= 0; i--) {
+        final entry = _localHistory.removeAt(i);
+        _listKey.currentState?.removeItem(
+          i,
+          (context, animation) => _buildItem(entry, animation),
+          duration: const Duration(milliseconds: 300),
+        );
+      }
+    }
+  }
+
+  Widget _buildItem(TranslationEntry entry, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+      child: FadeTransition(
+        opacity: animation,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _TranslationCard(entry: entry),
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (history.isEmpty) {
+    if (_localHistory.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -22,14 +79,14 @@ class TranslationLog extends StatelessWidget {
             Icon(
               Icons.translate,
               size: 64,
-              color: Colors.grey.shade700,
+              color: Colors.white.withOpacity(0.5),
             ),
             const SizedBox(height: 16),
             Text(
               'No translations yet',
               style: TextStyle(
                 fontSize: 18,
-                color: Colors.grey.shade600,
+                color: Colors.white.withOpacity(0.7),
               ),
             ),
             const SizedBox(height: 8),
@@ -37,7 +94,7 @@ class TranslationLog extends StatelessWidget {
               'Tap the mic button to start',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey.shade500,
+                color: Colors.white.withOpacity(0.5),
               ),
             ),
           ],
@@ -45,96 +102,129 @@ class TranslationLog extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
+    return AnimatedList(
+      key: _listKey,
       reverse: true,  // Show latest at bottom
       padding: const EdgeInsets.all(16),
-      itemCount: history.length,
-      itemBuilder: (context, index) {
-        final entry = history[history.length - 1 - index];
-        return _TranslationCard(entry: entry);
+      initialItemCount: _localHistory.length,
+      itemBuilder: (context, index, animation) {
+        // Because it's reversed, index 0 is the newest item (at the end of the list)
+        final entry = _localHistory[_localHistory.length - 1 - index];
+        return _buildItem(entry, animation);
       },
     );
   }
 }
 
-/// Card displaying a single translation entry
-class _TranslationCard extends StatelessWidget {
+/// Card displaying a single translation entry with glassmorphism
+class _TranslationCard extends StatefulWidget {
   final TranslationEntry entry;
 
   const _TranslationCard({required this.entry});
 
   @override
+  State<_TranslationCard> createState() => _TranslationCardState();
+}
+
+class _TranslationCardState extends State<_TranslationCard> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
     final timeFormat = DateFormat('HH:mm:ss');
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      color: const Color(0xFF1F2937),  // Dark gray
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with mode and timestamp
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    entry.modeString,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.98 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF1F2937).withOpacity(0.4),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1,
                 ),
-                Text(
-                  timeFormat.format(entry.timestamp),
-                  style: TextStyle(
-                    color: Colors.grey.shade500,
-                    fontSize: 12,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header with mode and timestamp
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            widget.entry.modeString,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          timeFormat.format(widget.entry.timestamp),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Original text
+                    _TextSection(
+                      label: 'Original',
+                      text: widget.entry.originalText,
+                      color: const Color(0xFF60A5FA),  // Light blue
+                    ),
+                    
+                    const SizedBox(height: 12),
+                    
+                    // Divider
+                    Divider(color: Colors.white.withOpacity(0.1)),
+                    
+                    const SizedBox(height: 12),
+                    
+                    // Translated text
+                    _TextSection(
+                      label: 'Translated',
+                      text: widget.entry.translatedText,
+                      color: const Color(0xFF34D399),  // Light green
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-            const SizedBox(height: 16),
-            
-            // Original text
-            _TextSection(
-              label: 'Original',
-              text: entry.originalText,
-              color: const Color(0xFF60A5FA),  // Light blue
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // Divider
-            Divider(color: Colors.grey.shade700),
-            
-            const SizedBox(height: 12),
-            
-            // Translated text
-            _TextSection(
-              label: 'Translated',
-              text: entry.translatedText,
-              color: const Color(0xFF34D399),  // Light green
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -161,7 +251,7 @@ class _TextSection extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            color: color,
+            color: color.withOpacity(0.8),
             fontSize: 12,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
