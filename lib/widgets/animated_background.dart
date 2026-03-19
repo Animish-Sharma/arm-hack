@@ -1,6 +1,7 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
-/// A subtle, slow-moving animated mesh gradient background.
+/// An exotic AI-style flowing sweep gradient background.
 class AnimatedBackground extends StatefulWidget {
   final Widget child;
 
@@ -39,24 +40,17 @@ class _AnimatedBackgroundState extends State<AnimatedBackground>
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(
-                -1.0 + (_animation.value * 2),
-                -1.0 + (_animation.value * 1.5),
-              ),
-              end: Alignment(
-                1.0 - (_animation.value * 2),
-                1.0 - (_animation.value * 1.5),
-              ),
-              colors: [
-                const Color(0xFF111827), // Very dark gray
-                Color.lerp(
-                  const Color(0xFF1E1B4B), // Deep indigo
-                  const Color(0xFF312E81), // Lighter indigo
-                  _animation.value,
-                )!,
-                const Color(0xFF0F172A), // Dark slate
+            gradient: SweepGradient(
+              center: Alignment.center,
+              transform: GradientRotation(_animation.value * 2 * pi),
+              colors: const [
+                Color(0xFF0F172A), // Slate
+                Color(0xFF312E81), // Indigo
+                Color(0xFF4C1D95), // Violet
+                Color(0xFF1E1B4B), // Deep Purple
+                Color(0xFF0F172A), // Slate
               ],
+              stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
             ),
           ),
           child: child,

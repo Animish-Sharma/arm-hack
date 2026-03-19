@@ -70,8 +70,8 @@ class _MicButtonState extends State<MicButton> with TickerProviderStateMixin {
           child: Transform.scale(
             scale: 1.0 + (value * 0.8), // Scale up to 1.8x
             child: Container(
-              width: 120,
-              height: 120,
+              width: 90,
+              height: 90,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
@@ -107,16 +107,21 @@ class _MicButtonState extends State<MicButton> with TickerProviderStateMixin {
           // Main Button
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: 120,
-            height: 120,
+            width: 90,
+            height: 90,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: _getGradient(color),
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.5),
-                  blurRadius: _shouldAnimate(widget.state) ? 25 : 10,
-                  spreadRadius: _shouldAnimate(widget.state) ? 8 : 2,
+                  color: color.withOpacity(0.6),
+                  blurRadius: _shouldAnimate(widget.state) ? 40 : 20,
+                  spreadRadius: _shouldAnimate(widget.state) ? 12 : 4,
+                ),
+                BoxShadow(
+                  color: color.withOpacity(0.3),
+                  blurRadius: 80,
+                  spreadRadius: _shouldAnimate(widget.state) ? 20 : 0,
                 ),
               ],
             ),
@@ -129,7 +134,7 @@ class _MicButtonState extends State<MicButton> with TickerProviderStateMixin {
               child: Icon(
                 _getIcon(),
                 key: ValueKey(_getIcon()),
-                size: 50,
+                size: 38,
                 color: Colors.white,
               ),
             ),

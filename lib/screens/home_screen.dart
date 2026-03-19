@@ -30,47 +30,84 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent, // Let AnimatedBackground show through
+      backgroundColor:
+          Colors.transparent, // Let AnimatedBackground show through
       body: AnimatedBackground(
         child: SafeArea(
           child: Column(
             children: [
               // Header with title and language toggle
               _buildHeader(),
-              
-              // Translation log (scrollable)
+
+              // Latest Translation Card
               Expanded(
                 child: Consumer<TranslatorProvider>(
                   builder: (context, provider, child) {
-                    return TranslationLog(history: provider.state.history);
+                    if (provider.state.history.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'Ready to translate.\nTap the microphone below.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white54,
+                            fontSize: 16,
+                            height: 1.5,
+                          ),
+                        ),
+                      );
+                    }
+
+                    final latest = provider.state.history.last;
+                    return SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: TranslationCard(entry: latest),
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),
-              
+
               // Audio Wave Visualizer
               Consumer<TranslatorProvider>(
                 builder: (context, provider, child) {
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
-                    height: (provider.state.state == AppState.listening || provider.state.state == AppState.speaking) ? 60 : 0,
+                    height:
+                        (provider.state.state == AppState.listening ||
+                            provider.state.state == AppState.speaking)
+                        ? 60
+                        : 0,
                     curve: Curves.easeInOut,
                     child: SingleChildScrollView(
                       physics: const NeverScrollableScrollPhysics(),
                       child: AudioWave(
-                        isAnimating: provider.state.state == AppState.listening || provider.state.state == AppState.speaking,
-                        color: provider.state.state == AppState.listening ? const Color(0xFFEF4444) : const Color(0xFF10B981),
+                        isAnimating:
+                            provider.state.state == AppState.listening ||
+                            provider.state.state == AppState.speaking,
+                        color: provider.state.state == AppState.listening
+                            ? const Color(0xFFEF4444)
+                            : const Color(0xFF10B981),
                       ),
                     ),
                   );
                 },
               ),
-              
+
               const SizedBox(height: 10),
-              
+
               // Microphone button and status
               _buildMicSection(),
-              
-              const SizedBox(height: 40),
+
+              const SizedBox(height: 20),
+
+              _buildOptimizationBadge(),
+
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -94,111 +131,152 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-      child: Column(
-        children: [
-          // Title
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+              // Title
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.translate,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.translate,
-                  color: Colors.white,
-                  size: 28,
-                ),
+                  const SizedBox(width: 12),
+                  const Flexible(
+                    child: Text(
+                      'Voice Translator',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              const Text(
-                'Voice Translator',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
+
+              const SizedBox(height: 16),
+
+              // Language toggle
+              Consumer<TranslatorProvider>(
+                builder: (context, provider, child) {
+                  return _buildLanguageToggle(provider);
+                },
               ),
             ],
           ),
-          
-          const SizedBox(height: 16),
-          
-          // Language toggle
-          Consumer<TranslatorProvider>(
-            builder: (context, provider, child) {
-              return _buildLanguageToggle(provider);
-            },
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // Optimization badge
-          _buildOptimizationBadge(),
-        ],
-      ),
-    ),
-  ),
-);
-  }
-
-  /// Build language toggle switch
-  Widget _buildLanguageToggle(TranslatorProvider provider) {
-    final isEnglishToHindi = provider.state.translationMode == TranslationMode.englishToHindi;
-    
-    return GestureDetector(
-      onTap: () => provider.toggleTranslationMode(),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: const Color(0xFF374151),
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(
-            color: const Color(0xFF6366F1),
-            width: 2,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildLanguageLabel('English', isEnglishToHindi),
-            const SizedBox(width: 12),
-            Icon(
-              Icons.swap_horiz,
-              color: const Color(0xFF6366F1),
-              size: 24,
-            ),
-            const SizedBox(width: 12),
-            _buildLanguageLabel('हिन्दी', !isEnglishToHindi),
-          ],
         ),
       ),
     );
   }
 
-  /// Build language label with highlight
-  Widget _buildLanguageLabel(String text, bool isActive) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        gradient: isActive
-            ? const LinearGradient(
-                colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-              )
-            : null,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: isActive ? Colors.white : Colors.grey.shade400,
-          fontSize: 16,
-          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+  /// Build language toggle switch (iOS Segmented Control Style)
+  Widget _buildLanguageToggle(TranslatorProvider provider) {
+    final isEnglishToHindi =
+        provider.state.translationMode == TranslationMode.englishToHindi;
+
+    return GestureDetector(
+      onTap: () => provider.toggleTranslationMode(),
+      child: Container(
+        height: 48,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1F2937).withOpacity(0.6),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withOpacity(0.05), width: 1),
+        ),
+        child: Stack(
+          children: [
+            // Sliding highlight pill
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              left: isEnglishToHindi ? 4 : 146, // 4 + 110 + 32
+              top: 4,
+              bottom: 4,
+              width: 110,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6366F1).withOpacity(0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Labels and icon
+            Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 110,
+                    child: Center(
+                      child: Text(
+                        'English',
+                        style: TextStyle(
+                          color: isEnglishToHindi
+                              ? Colors.white
+                              : Colors.white60,
+                          fontSize: 16,
+                          fontWeight: isEnglishToHindi
+                              ? FontWeight.bold
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 32,
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.swap_horiz,
+                      color: Colors.white.withOpacity(0.3),
+                      size: 20,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 110,
+                    child: Center(
+                      child: Text(
+                        'हिन्दी',
+                        style: TextStyle(
+                          color: !isEnglishToHindi
+                              ? Colors.white
+                              : Colors.white60,
+                          fontSize: 16,
+                          fontWeight: !isEnglishToHindi
+                              ? FontWeight.bold
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -207,23 +285,16 @@ class _HomeScreenState extends State<HomeScreen> {
   /// Build optimization badge
   Widget _buildOptimizationBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: const Color(0xFF065F46),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFF10B981),
-          width: 1,
-        ),
+        border: Border.all(color: const Color(0xFF10B981), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.speed,
-            color: Color(0xFF10B981),
-            size: 14,
-          ),
+          const Icon(Icons.speed, color: Color(0xFF10B981), size: 14),
           const SizedBox(width: 6),
           Text(
             'Powered by Arm NEON • LiteRT XNNPACK',
@@ -273,7 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Show initialization spinner
         if (provider.state.state == AppState.initializing) {
-           return Padding(
+          return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
             child: Column(
               children: [
@@ -284,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
                 const SizedBox(height: 8),
-                 Text(
+                Text(
                   'First run may take a few seconds',
                   style: TextStyle(color: Colors.white30, fontSize: 12),
                 ),
@@ -297,9 +368,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Status text
             _buildStatusText(provider.state),
-            
+
             const SizedBox(height: 20),
-            
+
             // Microphone button
             MicButton(
               state: provider.state.state,
@@ -311,9 +382,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Error message if any
             if (provider.state.errorMessage != null)
               Padding(
@@ -381,12 +452,11 @@ class _HomeScreenState extends State<HomeScreen> {
         key: ValueKey<String>(text),
         style: TextStyle(
           color: color,
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.w500,
           letterSpacing: 0.5,
         ),
       ),
     );
   }
-
 }

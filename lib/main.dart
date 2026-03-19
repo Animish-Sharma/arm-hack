@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_translator/providers/translator_provider.dart';
-import 'package:speech_translator/screens/home_screen.dart';
+
+import 'package:speech_translator/screens/main_screen.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
 void main() async {
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: const HomeScreen(),
+        home: const MainScreen(),
       ),
     );
   }

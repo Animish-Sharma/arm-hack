@@ -4,27 +4,40 @@ import 'package:provider/provider.dart';
 import 'package:speech_translator/providers/translator_provider.dart';
 import 'package:speech_translator/widgets/translation_log.dart';
 import 'package:speech_translator/widgets/animated_background.dart';
+import 'package:speech_translator/services/translation_service.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent, // Let AnimatedBackground show through
-      body: AnimatedBackground(
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(context),
-              Expanded(
-                child: Consumer<TranslatorProvider>(
-                  builder: (context, provider, child) {
-                    return TranslationLog(history: provider.state.history);
-                  },
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Let AnimatedBackground show through
+        body: AnimatedBackground(
+          child: SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(context),
+                Expanded(
+                  child: Consumer<TranslatorProvider>(
+                    builder: (context, provider, child) {
+                      final history = provider.state.history;
+                      final engToHin = history.where((e) => e.mode == TranslationMode.englishToHindi).toList();
+                      final hinToEng = history.where((e) => e.mode == TranslationMode.hindiToEnglish).toList();
+
+                      return TabBarView(
+                        children: [
+                          TranslationLog(history: engToHin),
+                          TranslationLog(history: hinToEng),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -34,9 +47,8 @@ class HistoryScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
-          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: const Color(0xFF111827).withOpacity(0.5),
             border: Border(
@@ -46,33 +58,57 @@ class HistoryScreen extends StatelessWidget {
               ),
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
             children: [
-              const Icon(
-                Icons.history,
-                color: Colors.white,
-                size: 28,
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text(
-                  'Translation History',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.history,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'History',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _showClearHistoryDialog(context);
+                      },
+                      icon: const Icon(Icons.delete_outline),
+                      color: Colors.white70,
+                      tooltip: 'Clear History',
+                    ),
+                  ],
                 ),
               ),
-              IconButton(
-                onPressed: () {
-                  _showClearHistoryDialog(context);
-                },
-                icon: const Icon(Icons.delete_outline),
-                color: Colors.white70,
-                tooltip: 'Clear History',
+              TabBar(
+                indicatorColor: const Color(0xFF6366F1),
+                indicatorWeight: 3,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white.withOpacity(0.5),
+                tabs: const [
+                  Tab(text: 'English → Hindi'),
+                  Tab(text: 'Hindi → English'),
+                ],
               ),
             ],
           ),

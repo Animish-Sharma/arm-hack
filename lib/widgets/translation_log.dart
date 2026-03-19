@@ -8,10 +8,7 @@ import 'package:intl/intl.dart';
 class TranslationLog extends StatefulWidget {
   final List<TranslationEntry> history;
 
-  const TranslationLog({
-    super.key,
-    required this.history,
-  });
+  const TranslationLog({super.key, required this.history});
 
   @override
   State<TranslationLog> createState() => _TranslationLogState();
@@ -30,7 +27,7 @@ class _TranslationLogState extends State<TranslationLog> {
   @override
   void didUpdateWidget(TranslationLog oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // Check for new items added
     if (widget.history.length > oldWidget.history.length) {
       // Find the new items (assuming they are appended to the end)
@@ -63,7 +60,7 @@ class _TranslationLogState extends State<TranslationLog> {
         opacity: animation,
         child: Padding(
           padding: const EdgeInsets.only(bottom: 16),
-          child: _TranslationCard(entry: entry),
+          child: TranslationCard(entry: entry),
         ),
       ),
     );
@@ -76,24 +73,42 @@ class _TranslationLogState extends State<TranslationLog> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.translate,
-              size: 64,
-              color: Colors.white.withOpacity(0.5),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF1F2937).withOpacity(0.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF6366F1).withOpacity(0.2),
+                    blurRadius: 40,
+                    spreadRadius: 10,
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.history_toggle_off,
+                size: 64,
+                color: const Color(0xFF6366F1).withOpacity(0.8),
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 32),
             Text(
               'No translations yet',
               style: TextStyle(
-                fontSize: 18,
-                color: Colors.white.withOpacity(0.7),
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+                color: Colors.white.withOpacity(0.9),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
-              'Tap the mic button to start',
+              'Your translation history will appear here.\nTap the microphone on the Home tab to start.',
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
+                height: 1.5,
                 color: Colors.white.withOpacity(0.5),
               ),
             ),
@@ -104,7 +119,7 @@ class _TranslationLogState extends State<TranslationLog> {
 
     return AnimatedList(
       key: _listKey,
-      reverse: true,  // Show latest at bottom
+      reverse: true, // Show latest at bottom
       padding: const EdgeInsets.all(16),
       initialItemCount: _localHistory.length,
       itemBuilder: (context, index, animation) {
@@ -117,16 +132,16 @@ class _TranslationLogState extends State<TranslationLog> {
 }
 
 /// Card displaying a single translation entry with glassmorphism
-class _TranslationCard extends StatefulWidget {
+class TranslationCard extends StatefulWidget {
   final TranslationEntry entry;
 
-  const _TranslationCard({required this.entry});
+  const TranslationCard({super.key, required this.entry});
 
   @override
-  State<_TranslationCard> createState() => _TranslationCardState();
+  State<TranslationCard> createState() => _TranslationCardState();
 }
 
-class _TranslationCardState extends State<_TranslationCard> {
+class _TranslationCardState extends State<TranslationCard> {
   bool _isPressed = false;
 
   @override
@@ -149,14 +164,15 @@ class _TranslationCardState extends State<_TranslationCard> {
                 color: const Color(0xFF1F2937).withOpacity(0.4),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withOpacity(0.15),
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withOpacity(0.4),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
@@ -199,26 +215,26 @@ class _TranslationCardState extends State<_TranslationCard> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Original text
                     _TextSection(
                       label: 'Original',
                       text: widget.entry.originalText,
-                      color: const Color(0xFF60A5FA),  // Light blue
+                      color: const Color(0xFF60A5FA), // Light blue
                     ),
-                    
+
                     const SizedBox(height: 12),
-                    
+
                     // Divider
                     Divider(color: Colors.white.withOpacity(0.1)),
-                    
+
                     const SizedBox(height: 12),
-                    
+
                     // Translated text
                     _TextSection(
                       label: 'Translated',
                       text: widget.entry.translatedText,
-                      color: const Color(0xFF34D399),  // Light green
+                      color: const Color(0xFF34D399), // Light green
                     ),
                   ],
                 ),
