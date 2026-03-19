@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:speech_translator/models/translation_state.dart';
+import 'package:speech_translator/services/history_service.dart';
 import 'package:speech_translator/services/stt_service.dart';
 import 'package:speech_translator/services/translation_service.dart';
 import 'package:speech_translator/services/tts_service.dart';
@@ -10,6 +11,7 @@ class TranslatorProvider extends ChangeNotifier {
   final STTService _sttService = STTService();
   final TranslationService _translationService = TranslationService();
   final TTSService _ttsService = TTSService();
+  final HistoryService _historyService = HistoryService();
 
   TranslationState _state = TranslationState();
   TranslationState get state => _state;
@@ -42,39 +44,43 @@ class TranslatorProvider extends ChangeNotifier {
     try {
       // Listen for download progress from both services
       void onProgress() => notifyListeners();
-      
+
       _sttService.downloadProgress.addListener(onProgress);
       _translationService.downloadProgress.addListener(onProgress);
 
-      final sttOk = await _sttService.initialize();
-      if (!sttOk) {
-        _updateState(_state.copyWith(
-          state: AppState.error,
-          errorMessage: 'Microphone permission denied or Whisper model download failed',
-        ));
+      final results = await Future.wait([
+        _sttService.initialize(),
+        _translationService.initialize(),
+        _ttsService.initialize().then((_) => true),
+      ]);
+
+      final sttOk = results[0];
+      final transOk = results[1];
+
+      if (!sttOk || !transOk) {
+        _updateState(
+          _state.copyWith(
+            state: AppState.error,
+            errorMessage: 'Model initialization failed (STT or Gemma)',
+          ),
+        );
         return;
       }
 
-      final transOk = await _translationService.initialize();
-      if (!transOk) {
-         _updateState(_state.copyWith(
-          state: AppState.error,
-          errorMessage: 'Gemma model initialization/download failed',
-        ));
-        return;
-      }
-
-      await _ttsService.initialize();
-      
       _sttService.downloadProgress.removeListener(onProgress);
       _translationService.downloadProgress.removeListener(onProgress);
-      
-      _updateState(_state.copyWith(state: AppState.idle));
+
+      final loadedHistory = await _historyService.loadHistory();
+      _updateState(
+        _state.copyWith(state: AppState.idle, history: loadedHistory),
+      );
     } catch (e) {
-      _updateState(_state.copyWith(
-        state: AppState.error,
-        errorMessage: 'Initialization failed: $e',
-      ));
+      _updateState(
+        _state.copyWith(
+          state: AppState.error,
+          errorMessage: 'Initialization failed: $e',
+        ),
+      );
     }
   }
 
@@ -98,36 +104,56 @@ class TranslatorProvider extends ChangeNotifier {
       // Locale drives which Whisper model is loaded:
       //   en_US → English model (ggml-tiny-en-q4_0.bin)
       //   hi_IN → Hindi model   (ggml-tiny-hindi-q4_0.bin)
-      final sourceLocale =
-          _translationService.getSourceLanguageCode(_state.translationMode);
+      final sourceLocale = _translationService.getSourceLanguageCode(
+        _state.translationMode,
+      );
+      final targetLocale = _translationService.getTargetLanguageCode(
+        _state.translationMode,
+      );
+
+      // Pre-warm the TTS Voice dynamically in the background while user is speaking
+      _ttsService.preWarmLanguage(targetLocale);
+
+      // Pre-allocate the Gemma session while the user is speaking to hide latency
+      _translationService.prepareSession();
 
       await _sttService.startListening(
         localeId: sourceLocale,
         onResult: (recognizedText) async {
-          print('[Debug] onResult callback called. _benchmarkStartTime=$_benchmarkStartTime');
+          print(
+            '[Debug] onResult callback called. _benchmarkStartTime=$_benchmarkStartTime',
+          );
           int sttLatencyMs = 0;
           if (_benchmarkStartTime != null) {
-             sttLatencyMs = DateTime.now().difference(_benchmarkStartTime!).inMilliseconds;
-             print('[Benchmark] STT Latency: ${sttLatencyMs}ms');
+            sttLatencyMs = DateTime.now()
+                .difference(_benchmarkStartTime!)
+                .inMilliseconds;
+            print('[Benchmark] STT Latency: ${sttLatencyMs}ms');
           } else {
-             print('[Benchmark] STT Latency: Skipped (_benchmarkStartTime is null)');
+            print(
+              '[Benchmark] STT Latency: Skipped (_benchmarkStartTime is null)',
+            );
           }
-           
+
           if (recognizedText.isEmpty) {
-            _updateState(_state.copyWith(
-              state: AppState.error,
-              errorMessage: 'No speech detected. Please try again.',
-            ));
+            _updateState(
+              _state.copyWith(
+                state: AppState.error,
+                errorMessage: 'No speech detected. Please try again.',
+              ),
+            );
             return;
           }
           await _translateAndSpeak(recognizedText, sttLatencyMs);
         },
       );
     } catch (e) {
-      _updateState(_state.copyWith(
-        state: AppState.error,
-        errorMessage: 'Speech recognition failed: $e',
-      ));
+      _updateState(
+        _state.copyWith(
+          state: AppState.error,
+          errorMessage: 'Speech recognition failed: $e',
+        ),
+      );
     }
   }
 
@@ -141,8 +167,10 @@ class TranslatorProvider extends ChangeNotifier {
       return;
     }
     _benchmarkStartTime = DateTime.now();
-    print('[Benchmark] Stop received. Processing started at ${_benchmarkStartTime!.toIso8601String()}');
-    
+    print(
+      '[Benchmark] Stop received. Processing started at ${_benchmarkStartTime!.toIso8601String()}',
+    );
+
     // Update UI immediately to processing state while STT runs
     // We use 'translating' as a general "processing" state for the UI
     _updateState(_state.copyWith(state: AppState.translating));
@@ -161,14 +189,18 @@ class TranslatorProvider extends ChangeNotifier {
         mode: _state.translationMode,
       );
       final transEnd = DateTime.now();
-      final translationLatencyMs = transEnd.difference(transStart).inMilliseconds;
+      final translationLatencyMs = transEnd
+          .difference(transStart)
+          .inMilliseconds;
       print('[Benchmark] Translation Latency: ${translationLatencyMs}ms');
 
       if (translatedText == null || translatedText.isEmpty) {
-        _updateState(_state.copyWith(
-          state: AppState.error,
-          errorMessage: 'Translation failed',
-        ));
+        _updateState(
+          _state.copyWith(
+            state: AppState.error,
+            errorMessage: 'Translation failed',
+          ),
+        );
         return;
       }
 
@@ -179,16 +211,21 @@ class TranslatorProvider extends ChangeNotifier {
         timestamp: DateTime.now(),
       );
 
-      _updateState(_state.copyWith(
-        state: AppState.speaking,
-        history: [..._state.history, entry],
-      ));
+      final newHistory = [..._state.history, entry];
 
-      final targetLanguage =
-          _translationService.getTargetLanguageCode(_state.translationMode);
+      _updateState(
+        _state.copyWith(state: AppState.speaking, history: newHistory),
+      );
+
+      // Save the updated history silently in the background
+      _historyService.saveHistory(newHistory);
+
+      final targetLanguage = _translationService.getTargetLanguageCode(
+        _state.translationMode,
+      );
 
       final ttsStart = DateTime.now();
-      
+
       // We'll consider TTS "processing" time as the time until the speak command is issued
       // plus the time it takes to synthesize.
       // Since flutter_tts is async, we'll measure the time until the completion handler fires
@@ -201,36 +238,55 @@ class TranslatorProvider extends ChangeNotifier {
       // "TTS Latency" usually refers to time to *start* speaking (Time to First Audio).
       // But for a full pipeline benchmark, total time is also interesting.
       // Let's stick to the previous pattern: measure until completion for now as per original code.
-      
+
       // I will refactor to use a Completer for the TTS to ensure we can await it if needed,
       // but sticking to the existing pattern is less risky.
       // I need to inject the logging into the completion handler or after.
       // The original code printed latency in the completion handler.
       // I will move the logging logic there.
 
-      _ttsService.setCompletionHandler(() {
-        final ttsEnd = DateTime.now();
-        final ttsLatencyMs = ttsEnd.difference(ttsStart).inMilliseconds;
-        print('[Benchmark] TTS Latency: ${ttsLatencyMs}ms');
-        
-        final totalLatencyMs = sttLatencyMs + translationLatencyMs + ttsLatencyMs;
+      // TTS "Time To First Audio" (TTFA) is the true latency metric we care about.
+      // The completion handler fires when the speech finishes fully!
+      _ttsService.setStartHandler(() {
+        final ttsStartPlay = DateTime.now();
+        final ttsLatencyMs = ttsStartPlay.difference(ttsStart).inMilliseconds;
+        print('[Benchmark] TTS Time-to-First-Audio Latency: ${ttsLatencyMs}ms');
+
+        final totalLatencyMs =
+            sttLatencyMs + translationLatencyMs + ttsLatencyMs;
         if (_benchmarkStartTime != null) {
-             print('[Benchmark] Total Pipeline Latency: ${totalLatencyMs}ms');
+          print(
+            '[Benchmark] True Pipeline Latency (TTFA): ${totalLatencyMs}ms',
+          );
         }
 
         // Log structured benchmark data
         final benchmarkData = {
           'timestamp': DateTime.now().toIso8601String(),
           'input_text': originalText,
-          'input_language': _state.translationMode == TranslationMode.englishToHindi ? 'en' : 'hi',
+          'input_language':
+              _state.translationMode == TranslationMode.englishToHindi
+              ? 'en'
+              : 'hi',
           'translated_text': translatedText,
-          'output_language': _state.translationMode == TranslationMode.englishToHindi ? 'hi' : 'en',
+          'output_language':
+              _state.translationMode == TranslationMode.englishToHindi
+              ? 'hi'
+              : 'en',
           'stt_latency_ms': sttLatencyMs,
           'translation_latency_ms': translationLatencyMs,
-          'tts_latency_ms': ttsLatencyMs,
-          'total_latency_ms': totalLatencyMs,
+          'tts_ttfa_latency_ms': ttsLatencyMs,
+          'total_ttfa_latency_ms': totalLatencyMs,
         };
         print('BENCHMARK_DATA: ${jsonEncode(benchmarkData)}');
+      });
+
+      _ttsService.setCompletionHandler(() {
+        final ttsEnd = DateTime.now();
+        final completeDuration = ttsEnd.difference(ttsStart).inMilliseconds;
+        print(
+          '[Benchmark] TTS Utterance Complete (incl. speech length): ${completeDuration}ms',
+        );
 
         _updateState(_state.copyWith(state: AppState.idle));
       });
@@ -239,13 +295,13 @@ class TranslatorProvider extends ChangeNotifier {
         text: translatedText,
         languageCode: targetLanguage,
       );
-
-
     } catch (e) {
-      _updateState(_state.copyWith(
-        state: AppState.error,
-        errorMessage: 'Translation/TTS failed: $e',
-      ));
+      _updateState(
+        _state.copyWith(
+          state: AppState.error,
+          errorMessage: 'Translation/TTS failed: $e',
+        ),
+      );
     }
   }
 
@@ -260,6 +316,11 @@ class TranslatorProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> clearHistory() async {
+    await _historyService.clearHistory();
+    _updateState(_state.copyWith(history: []));
+  }
+
   @override
   void dispose() {
     _sttService.dispose();
@@ -268,4 +329,3 @@ class TranslatorProvider extends ChangeNotifier {
     super.dispose();
   }
 }
-

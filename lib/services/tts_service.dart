@@ -51,9 +51,19 @@ class TTSService {
     return await _tts.getLanguages;
   }
 
-  /// Set completion callback
   void setCompletionHandler(Function() onComplete) {
     _tts.setCompletionHandler(onComplete);
+  }
+
+  /// Set start callback to measure Time-To-First-Audio
+  void setStartHandler(Function() onStart) {
+    _tts.setStartHandler(onStart);
+  }
+
+  /// Pre-warm language to load voice packs in the background
+  Future<void> preWarmLanguage(String languageCode) async {
+    if (!_isInitialized) await initialize();
+    _tts.setLanguage(languageCode);
   }
 
   /// Dispose resources

@@ -151,6 +151,9 @@ class STTService {
     _activeModel = localeId.startsWith('hi') ? _kHindiModel : _kEnglishModel;
     _onResult = onResult;
 
+    // Start initializing Whisper in the background immediately
+    _whisperInitFuture = _ensureWhisperModelLoaded(_activeModel!);
+
     // Temp WAV file for this recording session
     final tmpDir = await getTemporaryDirectory();
     _currentAudioPath = '${tmpDir.path}/whisper_input.wav';
@@ -170,6 +173,16 @@ class STTService {
   }
 
   String? _currentLoadedModelPath;
+  Future<void>? _whisperInitFuture;
+
+  Future<void> _ensureWhisperModelLoaded(_WhisperModel model) async {
+    final modelPath = await _modelPath(model);
+    if (_currentLoadedModelPath != modelPath) {
+      debugPrint('STTService: pre-loading model $modelPath ...');
+      final ok = await WhisperChannel.initWhisper(modelPath);
+      if (ok) _currentLoadedModelPath = modelPath;
+    }
+  }
 
   /// Stop recording and run Whisper transcription.
   /// The result is delivered via the [onResult] callback passed to [startListening].
@@ -183,20 +196,22 @@ class STTService {
     if (audioPath == null || _activeModel == null || _onResult == null) return;
 
     try {
-      // Load the correct model (re-init only if model changed)
-      final modelPath = await _modelPath(_activeModel!);
+      // Await the background Whisper initialization if it hasn't completed yet
+      if (_whisperInitFuture != null) {
+        await _whisperInitFuture;
+        _whisperInitFuture = null;
+      }
       
+      final modelPath = await _modelPath(_activeModel!);
       if (_currentLoadedModelPath != modelPath) {
-         debugPrint('STTService: loading model $modelPath ...');
-         final ok = await WhisperChannel.initWhisper(modelPath);
-         if (!ok) {
-           debugPrint('STTService: whisper init failed');
-           _onResult!('');
-           return;
-         }
-         _currentLoadedModelPath = modelPath;
-      } else {
-        debugPrint('STTService: model already loaded: $modelPath');
+        // Fallback in case the background load failed
+        final ok = await WhisperChannel.initWhisper(modelPath);
+        if (!ok) {
+          debugPrint('STTService: whisper init failed');
+          _onResult!('');
+          return;
+        }
+        _currentLoadedModelPath = modelPath;
       }
 
       final text = await WhisperChannel.transcribe(audioPath, _activeModel!.language);

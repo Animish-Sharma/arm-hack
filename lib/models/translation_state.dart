@@ -24,6 +24,27 @@ class TranslationEntry {
     required this.timestamp,
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'originalText': originalText,
+      'translatedText': translatedText,
+      'mode': mode.toString(),
+      'timestamp': timestamp.toIso8601String(),
+    };
+  }
+
+  factory TranslationEntry.fromJson(Map<String, dynamic> json) {
+    return TranslationEntry(
+      originalText: json['originalText'] as String,
+      translatedText: json['translatedText'] as String,
+      mode: TranslationMode.values.firstWhere(
+        (e) => e.toString() == json['mode'],
+        orElse: () => TranslationMode.englishToHindi,
+      ),
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
+  }
+
   /// Get formatted mode string for display
   String get modeString {
     switch (mode) {
@@ -44,7 +65,7 @@ class TranslationState {
 
   TranslationState({
     this.state = AppState.idle,
-    this.translationMode = TranslationMode.englishToHindi,
+    this.translationMode = TranslationMode.hindiToEnglish,
     this.history = const [],
     this.errorMessage,
   });
